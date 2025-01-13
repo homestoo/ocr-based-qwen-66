@@ -97,11 +97,13 @@
 
 ## 更新
 ### 2025/01/13 应佬友需求，优化了对数学公式的识别，效果如下图
-  - 原图：
+- 原图：
     
-![image|690x401, 75%](upload://jsL7sKDLKKP4xpNNgm9kHXq7qdD.png)
-  识别效果图：
-  ![image|536x500](upload://1mLEmxYZ3MPl0DvMsLSz7noQb4i.png)
+![image](https://github.com/user-attachments/assets/9841509d-be56-4eb9-aafa-4d4ca5555c2e)
+
+- 识别效果图：
+![image](https://github.com/user-attachments/assets/2340dc6d-9156-4866-aa53-cdfd1911a651)
+
 
 ### 2025/01/13 18点34分 支持`curl`接口调用
 - **支持base64**：
