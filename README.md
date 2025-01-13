@@ -59,7 +59,7 @@
 
 - 感谢 [QwenLM](https://chat.qwenlm.ai/) 提供的 OCR 功能。
 - 感谢 Cloudflare 提供的 Workers 服务。
-- 感谢 @JIU-W,@lonelykkk的思路支持
+- 感谢 @lonelykkk的思路支持
 
 
 ---
