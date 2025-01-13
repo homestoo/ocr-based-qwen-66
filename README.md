@@ -130,3 +130,6 @@ curl --location 'https://ocr.doublefenzhuan.me/api/recognize/url' \
 ```
 - 效果图：
 ![image](https://github.com/user-attachments/assets/db0c89f9-96f1-45b1-b1e9-88ac3d01e196)
+
+## 趋势
+[![Star History Chart](https://api.star-history.com/svg?repos=cunninger/ocr-based-qwen&type=Date)](https://star-history.com/#Cunninger/ocr-based-qwen&Date)
