@@ -16,86 +16,216 @@ async function handleRequest(request) {
     });
   }
 
-  // 处理 POST 请求
-  if (request.method === 'POST' && url.pathname === '/recognize') {
-    try {
-      const { token, imageId } = await request.json();
-
-      if (!token || !imageId) {
-        return new Response(JSON.stringify({ error: 'Missing token or imageId' }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        });
+  // API路由处理
+  switch (url.pathname) {
+    // 1. 通过图片URL识别
+    case '/api/recognize/url':
+      if (request.method === 'POST') {
+        return handleImageUrlRecognition(request);
       }
+      break;
 
-      // 调用 QwenLM API
-      const response = await fetch('https://chat.qwenlm.ai/api/chat/completions', {
-        method: 'POST',
-        headers: {
-          'accept': '*/*',
-          'authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          stream: false,
-          model: 'qwen-vl-max-latest',
-          messages: [
-            {
-              role: 'user',
-              content: [
-                { 
-                  type: 'text', 
-                  text: '请识别图片中的内容。对于数学公式和数学符号，请使用标准的LaTeX格式输出。' +
-                        '要求：\n' +
-                        '1. 所有数学公式和单个数学符号都要用LaTeX格式\n' +
-                        '2. 普通文本保持原样\n' +
-                        '3. 对于行内公式使用$单个符号$\n' +
-                        '4. 对于独立公式块使用$$公式$$\n' +
-                        '5. 严格保持原文的段落格式和换行\n' +
-                        '6. 当文本明显换行时，使用\\n进行换行处理\n' +
-                        '请尽可能精确地转换每个数学符号并保持原始排版格式。'
-                },
-                { type: 'image', image: imageId }, // 使用上传后的图片 ID
-              ],
-            },
-          ],
-          session_id: '1',
-          chat_id: '2',
-          id: '3',
-        }),
+    // 2. 通过Base64识别
+    case '/api/recognize/base64':
+      if (request.method === 'POST') {
+        return handleBase64Recognition(request);
+      }
+      break;
+
+    // 3. 通过图片文件识别 (原有的/recognize端点)
+    case '/recognize':
+      if (request.method === 'POST') {
+        return handleFileRecognition(request);
+      }
+      break;
+
+    // 返回前端界面
+    case '/':
+      return new Response(getHTML(), {
+        headers: { 'Content-Type': 'text/html' },
       });
+  }
 
-      const data = await response.json();
-      
-      // 对识别结果进行后处理，确保LaTeX格式正确并保持换行
-      let result = data.choices[0]?.message?.content || '识别失败';
-      result = result
-        // 修复可能的LaTeX格式问题
-        .replace(/\\（/g, '\\(')
-        .replace(/\\）/g, '\\)')
-        // 确保连续的换行符被保留（2个以上的换行符表示段落分隔）
-        .replace(/\n{3,}/g, '\n\n')
-        // 保留单个换行符，不合并
-        .replace(/([^\n])\n([^\n])/g, '$1\n$2')
-        .trim();
+  return new Response('Not Found', { status: 404 });
+}
 
-      return new Response(JSON.stringify({ ...data, choices: [{ message: { content: result } }] }), {
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
-    } catch (error) {
-      return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
-        status: 500,
+// 处理图片URL识别
+async function handleImageUrlRecognition(request) {
+  try {
+    const { token, imageUrl } = await request.json();
+
+    if (!token || !imageUrl) {
+      return new Response(JSON.stringify({ 
+        error: 'Missing token or imageUrl' 
+      }), {
+        status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
-  }
 
-  // 返回前端界面
-  return new Response(getHTML(), {
-    headers: { 'Content-Type': 'text/html' },
+    // 下载图片
+    const imageResponse = await fetch(imageUrl);
+    const imageBlob = await imageResponse.blob();
+
+    // 上传到QwenLM
+    const formData = new FormData();
+    formData.append('file', imageBlob);
+
+    const uploadResponse = await fetch('https://chat.qwenlm.ai/api/v1/files/', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const uploadData = await uploadResponse.json();
+    if (!uploadData.id) throw new Error('File upload failed');
+
+    // 调用识别API
+    return await recognizeImage(token, uploadData.id);
+  } catch (error) {
+    return new Response(JSON.stringify({ 
+      error: error.message || 'Internal Server Error' 
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+// 处理Base64识别
+async function handleBase64Recognition(request) {
+  try {
+    const { token, base64Image } = await request.json();
+
+    if (!token || !base64Image) {
+      return new Response(JSON.stringify({ 
+        error: 'Missing token or base64Image' 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // 转换Base64为Blob
+    const imageData = base64Image.startsWith('data:') ? 
+      base64Image : 
+      'data:image/png;base64,' + base64Image;
+    
+    const response = await fetch(imageData);
+    const blob = await response.blob();
+
+    // 上传到QwenLM
+    const formData = new FormData();
+    formData.append('file', blob);
+
+    const uploadResponse = await fetch('https://chat.qwenlm.ai/api/v1/files/', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const uploadData = await uploadResponse.json();
+    if (!uploadData.id) throw new Error('File upload failed');
+
+    // 调用识别API
+    return await recognizeImage(token, uploadData.id);
+  } catch (error) {
+    return new Response(JSON.stringify({ 
+      error: error.message || 'Internal Server Error' 
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+// 处理文件识别 (原有功能)
+async function handleFileRecognition(request) {
+  try {
+    const { token, imageId } = await request.json();
+
+    if (!token || !imageId) {
+      return new Response(JSON.stringify({ 
+        error: 'Missing token or imageId' 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    return await recognizeImage(token, imageId);
+  } catch (error) {
+    return new Response(JSON.stringify({ 
+      error: error.message || 'Internal Server Error' 
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+// 通用的识别函数
+async function recognizeImage(token, imageId) {
+  const response = await fetch('https://chat.qwenlm.ai/api/chat/completions', {
+    method: 'POST',
+    headers: {
+      'accept': '*/*',
+      'authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      stream: false,
+      model: 'qwen-vl-max-latest',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { 
+              type: 'text', 
+              text: '请识别图片中的内容。对于数学公式和数学符号，请使用标准的LaTeX格式输出。' +
+                    '要求：\n' +
+                    '1. 所有数学公式和单个数学符号都要用LaTeX格式\n' +
+                    '2. 普通文本保持原样\n' +
+                    '3. 对于行内公式使用$单个符号$\n' +
+                    '4. 对于独立公式块使用$$公式$$\n' +
+                    '5. 严格保持原文的段落格式和换行\n' +
+                    '6. 当文本明显换行时，使用\\n进行换行处理'
+            },
+            { type: 'image', image: imageId },
+          ],
+        },
+      ],
+      session_id: '1',
+      chat_id: '2',
+      id: '3',
+    }),
+  });
+
+  const data = await response.json();
+  
+  // 处理识别结果
+  let result = data.choices[0]?.message?.content || '识别失败';
+  result = result
+    .replace(/\\（/g, '\\(')
+    .replace(/\\）/g, '\\)')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/([^\n])\n([^\n])/g, '$1\n$2')
+    .trim();
+
+  return new Response(JSON.stringify({ 
+    success: true,
+    result: result 
+  }), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    },
   });
 }
 
@@ -556,6 +686,30 @@ function getHTML() {
     '    .copy-btn.copied {',
     '      background: #27ae60;',
     '    }',
+
+    '    /* Base64输入相关样式 */',
+    '    #base64Input {',
+    '      width: 100%;',
+    '      height: 100px;',
+    '      padding: 10px;',
+    '      margin-top: 10px;',
+    '      border: 1px solid #dcdde1;',
+    '      border-radius: 8px;',
+    '      resize: vertical;',
+    '    }',
+    '    .toggle-btn {',
+    '      background: #3498db;',
+    '      color: white;',
+    '      border: none;',
+    '      padding: 8px 15px;',
+    '      border-radius: 5px;',
+    '      cursor: pointer;',
+    '      margin-top: 10px;',
+    '      transition: background 0.3s ease;',
+    '    }',
+    '    .toggle-btn:hover {',
+    '      background: #2980b9;',
+    '    }',
     '</style>',
     '</head>',
     '<body>',
@@ -578,9 +732,11 @@ function getHTML() {
     '<div class="upload-area" id="uploadArea">',
     '<i>📸</i>',
     '<div class="upload-text">',
-    '拖拽图片到这里，或点击上传<br>',
+    '拖拽图片到这里，点击上传，或粘贴Base64图片内容<br>',
     '支持复制粘贴图片',
     '</div>',
+    '<textarea id="base64Input" placeholder="在此输入Base64格式的图片内容..." style="display: none; width: 100%; height: 100px; margin-top: 10px;"></textarea>',
+    '<button id="toggleBase64" class="toggle-btn" style="margin-top: 10px;">切换Base64输入</button>',
     '<img id="previewImage" class="preview-image">',
     '</div>',
     '<div class="loading" id="loading"></div>',
@@ -781,10 +937,14 @@ function getHTML() {
     
     '        const recognizeData = await recognizeResponse.json();',
             
-    '        // 提取并显示识别结果',
-    '        const result = recognizeData.choices[0]?.message?.content || \'识别失败\';',
-    '        resultDiv.innerHTML = result;',  // 使用innerHTML而不是textContent以支持公式渲染
-    '        MathJax.typesetPromise([resultDiv]).then(() => {',  // 渲染数学公式
+    '        // 修改这里：使用新的响应格式',
+    '        if (!recognizeData.success) {',
+    '          throw new Error(recognizeData.error || \'识别失败\');',
+    '        }',
+    
+    '        const result = recognizeData.result || \'识别失败\';',
+    '        resultDiv.innerHTML = result;   // 使用innerHTML而不是textContent以支持公式渲染',
+    '        MathJax.typesetPromise([resultDiv]).then(() => {',  // 渲染数学公式',
     '          resultContainer.classList.add(\'show\');',
     '        });',
     
@@ -820,7 +980,15 @@ function getHTML() {
     '    });',
     
     '    // 点击上传',
-    '    uploadArea.addEventListener(\'click\', () => {',
+    '    uploadArea.addEventListener(\'click\', (e) => {',
+    '      // 如果点击的是 base64Input 或 toggleBase64 按钮，不触发文件上传',
+    '      if (e.target.id === \'base64Input\' || ',
+    '          e.target.id === \'toggleBase64\' || ',
+    '          e.target.closest(\'#base64Input\') || ',
+    '          e.target.closest(\'#toggleBase64\')) {',
+    '        return;',
+    '      }',
+    
     '      const input = document.createElement(\'input\');',
     '      input.type = \'file\';',
     '      input.accept = \'image/*\';',
@@ -875,6 +1043,7 @@ function getHTML() {
     '    // 复制结果功能',
     '    copyBtn.addEventListener(\'click\', async () => {',
     '      const result = resultDiv.textContent;',
+    '        toggleBase64.textContent = \'隐藏Base64输入\';',
     '      try {',
     '        await navigator.clipboard.writeText(result);',
     '        copyBtn.textContent = \'已复制\';',
@@ -890,6 +1059,67 @@ function getHTML() {
     '    // 添加关闭侧边栏的功能',
     '    document.getElementById("closeSidebar").addEventListener("click", () => {',
     '      sidebar.classList.remove("open");',
+    '    });',
+    '    // Base64 输入相关功能',
+    '    const base64Input = document.getElementById(\'base64Input\');',
+    '    const toggleBase64 = document.getElementById(\'toggleBase64\');',
+    
+    '    // 切换 Base64 输入框显示',
+    '    toggleBase64.addEventListener(\'click\', (e) => {',
+    '      e.stopPropagation(); // 阻止事件冒泡到 uploadArea',
+    '      if (base64Input.style.display === \'none\') {',
+    '        base64Input.style.display = \'block\';',
+    '        toggleBase64.textContent = \'隐藏Base64输入\';',
+    '      } else {',
+    '        base64Input.style.display = \'none\';',
+    '        toggleBase64.textContent = \'切换Base64输入\';',
+    '      }',
+    '    });',
+    
+    '    // 为 base64Input 添加阻止事件冒泡',
+    '    document.getElementById(\'base64Input\').addEventListener(\'click\', (e) => {',
+    '      e.stopPropagation(); // 阻止事件冒泡到 uploadArea',
+    '    });',
+    
+    '    // base64Input 的 input 事件处理也需要阻止冒泡',
+    '    base64Input.addEventListener(\'input\', async (e) => {',
+    '      e.stopPropagation();',
+    '      const base64Content = base64Input.value.trim();',
+    '      if (base64Content) {',
+    '        try {',
+    '          // 尝试转换Base64为Blob',
+    '          let imageData;',
+    '          if (base64Content.startsWith(\'data:image\')) {',
+    '            imageData = base64Content;',
+    '          } else {',
+    '            imageData = \'data:image/png;base64,\' + base64Content;',
+    '          }',
+    
+    '          // 验证Base64是否为有效图片',
+    '          const img = new Image();',
+    '          img.src = imageData;',
+    '          await new Promise((resolve, reject) => {',
+    '            img.onload = resolve;',
+    '            img.onerror = reject;',
+    '          });',
+    
+    '          // 转换Base64为Blob',
+    '          const response = await fetch(imageData);',
+    '          const blob = await response.blob();',
+    '          const file = new File([blob], "image.png", { type: "image/png" });',
+    
+    '          // 显示预览',
+    '          previewImage.src = imageData;',
+    '          previewImage.style.display = \'block\';',
+    
+    '          // 处理图片',
+    '          await processImage(file);',
+    '        } catch (error) {',
+    '          resultDiv.textContent = \'处理失败: \' + error.message;',
+    '          resultContainer.classList.add(\'show\');',
+    '          console.error(\'Base64处理错误:\', error);',
+    '        }',
+    '      }',
     '    });',
     '</script>',
     '</body>',
