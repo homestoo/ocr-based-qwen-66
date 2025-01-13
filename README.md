@@ -30,7 +30,7 @@
 ## 🧩 使用说明
 
 1. **设置 Token**：
-   - 获取token:
+   - 前往https://chat.qwenlm.ai/ 获取token:
      ![image](https://github.com/user-attachments/assets/125f702e-856b-4a11-b5da-8df654ac8b7e)
 
    - 点击右上角的 **⚙️ Token设置** 按钮。
