@@ -68,6 +68,9 @@
          "imageUrl": "xxxx"
      }'
      ```
+6. **验证码识别**
+![image](https://github.com/user-attachments/assets/66f24d52-6263-446c-b371-cc2e65c9277c)
+
 
 ## 📜 许可证
 
