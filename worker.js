@@ -55,8 +55,8 @@ async function handleImageUrlRecognition(request) {
     const { token, imageUrl } = await request.json();
 
     if (!token || !imageUrl) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing token or imageUrl' 
+      return new Response(JSON.stringify({
+        error: 'Missing token or imageUrl'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -86,8 +86,8 @@ async function handleImageUrlRecognition(request) {
     // 调用识别API
     return await recognizeImage(token, uploadData.id);
   } catch (error) {
-    return new Response(JSON.stringify({ 
-      error: error.message || 'Internal Server Error' 
+    return new Response(JSON.stringify({
+      error: error.message || 'Internal Server Error'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -101,8 +101,8 @@ async function handleBase64Recognition(request) {
     const { token, base64Image } = await request.json();
 
     if (!token || !base64Image) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing token or base64Image' 
+      return new Response(JSON.stringify({
+        error: 'Missing token or base64Image'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -110,10 +110,10 @@ async function handleBase64Recognition(request) {
     }
 
     // 转换Base64为Blob
-    const imageData = base64Image.startsWith('data:') ? 
-      base64Image : 
+    const imageData = base64Image.startsWith('data:') ?
+      base64Image :
       'data:image/png;base64,' + base64Image;
-    
+
     const response = await fetch(imageData);
     const blob = await response.blob();
 
@@ -136,8 +136,8 @@ async function handleBase64Recognition(request) {
     // 调用识别API
     return await recognizeImage(token, uploadData.id);
   } catch (error) {
-    return new Response(JSON.stringify({ 
-      error: error.message || 'Internal Server Error' 
+    return new Response(JSON.stringify({
+      error: error.message || 'Internal Server Error'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -151,8 +151,8 @@ async function handleFileRecognition(request) {
     const { token, imageId } = await request.json();
 
     if (!token || !imageId) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing token or imageId' 
+      return new Response(JSON.stringify({
+        error: 'Missing token or imageId'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -161,8 +161,8 @@ async function handleFileRecognition(request) {
 
     return await recognizeImage(token, imageId);
   } catch (error) {
-    return new Response(JSON.stringify({ 
-      error: error.message || 'Internal Server Error' 
+    return new Response(JSON.stringify({
+      error: error.message || 'Internal Server Error'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -186,8 +186,8 @@ async function recognizeImage(token, imageId) {
         {
           role: 'user',
           content: [
-            { 
-              type: 'text', 
+            {
+              type: 'text',
               text: '请识别图片中的内容，注意以下要求：\n' +
                     '对于数学公式和普通文本：\n' +
                     '1. 所有数学公式和数学符号都必须使用标准的LaTeX格式\n' +
@@ -216,10 +216,10 @@ async function recognizeImage(token, imageId) {
 
   const data = await response.json();
   let result = data.choices[0]?.message?.content || '识别失败';
-  
+
   // 如果结果长度小于10且只包含字母数字，很可能是验证码
   if (result.length <= 10 && /^[A-Za-z0-9]+$/.test(result)) {
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       success: true,
       result: result.toUpperCase(), // 验证码统一转大写
       type: 'captcha'
@@ -242,7 +242,7 @@ async function recognizeImage(token, imageId) {
     .replace(/\$\$/g, '$$')
     .trim();
 
-  return new Response(JSON.stringify({ 
+  return new Response(JSON.stringify({
     success: true,
     result: result,
     type: 'text'
@@ -262,7 +262,7 @@ function getHTML() {
     '<meta charset="UTF-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
     '<title>Qwen VL 智能识别系统</title>',
-    
+
     // 添加 MathJax 支持
     '<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>',
     '<script>',
@@ -301,14 +301,14 @@ function getHTML() {
     '  checkMathJax();',
     '}',
     '</script>',
-    
+
     '<style>',
     '    * {',
     '      box-sizing: border-box;',
     '      margin: 0;',
     '      padding: 0;',
     '    }',
-        
+
     '    body {',
     '      font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, sans-serif;',
     '      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);',
@@ -318,7 +318,7 @@ function getHTML() {
     '      align-items: center;',
     '      padding: 20px;',
     '    }',
-    
+
     '    .container {',
     '      background: rgba(255, 255, 255, 0.95);',
     '      padding: 2.5rem;',
@@ -329,7 +329,7 @@ function getHTML() {
     '      max-width: 800px;',
     '      transition: all 0.3s ease;',
     '    }',
-    
+
     '    h1 {',
     '      color: #2c3e50;',
     '      margin-bottom: 0.5rem;',
@@ -346,7 +346,7 @@ function getHTML() {
     '      padding-bottom: 10px;',
     '      animation: titleFadeIn 1s ease-out;',
     '    }',
-    
+
     '    @keyframes titleFadeIn {',
     '      from {',
     '        opacity: 0;',
@@ -357,7 +357,7 @@ function getHTML() {
     '        transform: translateY(0);',
     '      }',
     '    }',
-    
+
     '    h1::after {',
     '      content: "";',
     '      position: absolute;',
@@ -368,7 +368,7 @@ function getHTML() {
     '      height: 3px;',
     '      background: linear-gradient(90deg, transparent, #3498db, transparent);',
     '    }',
-    
+
     '    .subtitle {',
     '      color: #7f8c8d;',
     '      text-align: center;',
@@ -379,7 +379,7 @@ function getHTML() {
     '      opacity: 0.8;',
     '      animation: subtitleFadeIn 1s ease-out 0.3s both;',
     '    }',
-    
+
     '    @keyframes subtitleFadeIn {',
     '      from {',
     '        opacity: 0;',
@@ -390,7 +390,7 @@ function getHTML() {
     '        transform: translateY(0);',
     '      }',
     '    }',
-    
+
     '    .upload-area {',
     '      border: 2px dashed #8e9eab;',
     '      border-radius: 12px;',
@@ -402,29 +402,29 @@ function getHTML() {
     '      position: relative;',
     '      overflow: hidden;',
     '    }',
-    
+
     '    .upload-area:hover {',
     '      border-color: #3498db;',
     '      background: rgba(52, 152, 219, 0.05);',
     '    }',
-    
+
     '    .upload-area.dragover {',
     '      border-color: #3498db;',
     '      background: rgba(52, 152, 219, 0.1);',
     '      transform: scale(1.02);',
     '    }',
-    
+
     '    .upload-area i {',
     '      font-size: 2rem;',
     '      color: #8e9eab;',
     '      margin-bottom: 1rem;',
     '    }',
-    
+
     '    .upload-text {',
     '      color: #7f8c8d;',
     '      font-size: 0.9rem;',
     '    }',
-    
+
     '    #tokens {',
     '      width: 100%;',
     '      padding: 0.8rem;',
@@ -434,19 +434,19 @@ function getHTML() {
     '      font-size: 0.9rem;',
     '      resize: none;',
     '    }',
-    
+
     '    .result-container {',
     '      margin-top: 1.5rem;',
     '      opacity: 0;',
     '      transform: translateY(20px);',
     '      transition: all 0.3s ease;',
     '    }',
-    
+
     '    .result-container.show {',
     '      opacity: 1;',
     '      transform: translateY(0);',
     '    }',
-    
+
     '    .result {',
     '      background: #f8f9fa;',
     '      padding: 1.2rem;',
@@ -456,13 +456,13 @@ function getHTML() {
     '      line-height: 1.6;',
     '      white-space: pre-wrap;',
     '    }',
-    
+
     '    .loading {',
     '      display: none;',
     '      text-align: center;',
     '      margin: 1rem 0;',
     '    }',
-    
+
     '    .loading::after {',
     '      content: \'\';',
     '      display: inline-block;',
@@ -473,11 +473,11 @@ function getHTML() {
     '      border-top-color: transparent;',
     '      animation: spin 0.8s linear infinite;',
     '    }',
-    
+
     '    @keyframes spin {',
     '      to { transform: rotate(360deg); }',
     '    }',
-    
+
     '    .preview-image {',
     '      max-width: 100%;',
     '      max-height: 200px;',
@@ -485,7 +485,7 @@ function getHTML() {
     '      border-radius: 8px;',
     '      display: none;',
     '    }',
-    
+
     '    /* 侧边栏样式 */',
     '    .sidebar {',
     '      position: fixed;',
@@ -499,11 +499,11 @@ function getHTML() {
     '      padding: 20px;',
     '      z-index: 1000;',
     '    }',
-    
+
     '    .sidebar.open {',
     '      right: 0;',
     '    }',
-    
+
     '    .sidebar-toggle {',
     '      position: fixed;',
     '      right: 20px;',
@@ -516,11 +516,11 @@ function getHTML() {
     '      cursor: pointer;',
     '      z-index: 1001;',
     '    }',
-    
+
     '    .token-list {',
     '      margin-top: 20px;',
     '    }',
-    
+
     '    .token-item {',
     '      background: #f8f9fa;',
     '      padding: 10px;',
@@ -529,11 +529,11 @@ function getHTML() {
     '      cursor: pointer;',
     '      word-break: break-all;',
     '    }',
-    
+
     '    .token-item:hover {',
     '      background: #e9ecef;',
     '    }',
-    
+
     '    #tokenInput {',
     '      width: 100%;',
     '      padding: 10px;',
@@ -541,7 +541,7 @@ function getHTML() {
     '      border: 1px solid #dcdde1;',
     '      border-radius: 5px;',
     '    }',
-    
+
     '    .save-btn {',
     '      background: #3498db;',
     '      color: white;',
@@ -551,20 +551,20 @@ function getHTML() {
     '      cursor: pointer;',
     '      width: 100%;',
     '    }',
-    
+
     '    /* 历史记录样式 */',
     '    .history-container {',
     '      margin-top: 2rem;',
     '      border-top: 1px solid #eee;',
     '      padding-top: 1rem;',
     '    }',
-    
+
     '    .history-title {',
     '      color: #2c3e50;',
     '      font-size: 1.2rem;',
     '      margin-bottom: 1rem;',
     '    }',
-    
+
     '    .history-item {',
     '      display: flex;',
     '      align-items: flex-start;',
@@ -573,7 +573,7 @@ function getHTML() {
     '      border-radius: 8px;',
     '      margin-bottom: 1rem;',
     '    }',
-    
+
     '    .history-image {',
     '      width: 100px;',
     '      height: 100px;',
@@ -581,29 +581,29 @@ function getHTML() {
     '      border-radius: 4px;',
     '      margin-right: 1rem;',
     '    }',
-    
+
     '    .history-content {',
     '      flex: 1;',
     '    }',
-    
+
     '    .history-text {',
     '      color: #2c3e50;',
     '      font-size: 0.9rem;',
     '      line-height: 1.4;',
     '    }',
-    
+
     '    .history-time {',
     '      color: #7f8c8d;',
     '      font-size: 0.8rem;',
     '      margin-top: 0.5rem;',
     '    }',
-    
+
     '    .no-history {',
     '      text-align: center;',
     '      color: #7f8c8d;',
     '      padding: 1rem;',
     '    }',
-    
+
     '    .modal {',
     '      display: none;',
     '      position: fixed;',
@@ -615,7 +615,7 @@ function getHTML() {
     '      z-index: 2000;',
     '      cursor: pointer;',
     '    }',
-    
+
     '    .modal-content {',
     '      max-width: 90%;',
     '      max-height: 90vh;',
@@ -625,13 +625,13 @@ function getHTML() {
     '      top: 50%;',
     '      transform: translateY(-50%);',
     '    }',
-    
+
     '    /* 修改侧边栏样式 */',
     '    .sidebar {',
     '      position: fixed;',
-    '      right: -400px;', 
+    '      right: -400px;',
     '      top: 0;',
-    '      width: 400px;', 
+    '      width: 400px;',
     '      height: 100vh;',
     '      background: rgba(255, 255, 255, 0.95);',
     '      backdrop-filter: blur(10px);',
@@ -747,11 +747,11 @@ function getHTML() {
     '      z-index: 1000;',
     '      overflow-y: auto;',
     '    }',
-    
+
     '    .history-sidebar.open {',
     '      left: 0;',
     '    }',
-    
+
     '    .history-toggle {',
     '      position: fixed;',
     '      left: 20px;',
@@ -764,7 +764,7 @@ function getHTML() {
     '      cursor: pointer;',
     '      z-index: 1001;',
     '    }',
-    
+
     '    /* 添加复制按钮样式 */',
     '    .result-header {',
     '      display: flex;',
@@ -772,7 +772,7 @@ function getHTML() {
     '      align-items: center;',
     '      margin-bottom: 10px;',
     '    }',
-    
+
     '    .copy-btn {',
     '      background: #3498db;',
     '      color: white;',
@@ -783,11 +783,11 @@ function getHTML() {
     '      font-size: 0.9rem;',
     '      transition: background 0.3s ease;',
     '    }',
-    
+
     '    .copy-btn:hover {',
     '      background: #2980b9;',
     '    }',
-    
+
     '    .copy-btn.copied {',
     '      background: #27ae60;',
     '    }',
@@ -1018,7 +1018,7 @@ function getHTML() {
     '</div>',
     '<div class="token-list" id="tokenList"></div>',
     '</div>',
-    
+
     '<div class="container">',
     '<h1>Qwen VL 智能识别系统</h1>',
     '<div class="subtitle">基于通义千问大模型的多模态智能识别引擎</div>',
@@ -1051,31 +1051,31 @@ function getHTML() {
     '</div>',
     '</div>',
     '</div>',
-    
+
     '<div id="imageModal" class="modal">',
     '<img class="modal-content" id="modalImage">',
     '</div>',
-    
+
     '<script>',
     '    // 首先定义类',
     '    function HistoryManager() {',
     '      this.maxHistory = 10;',
     '    }',
-    
+
     '    // 添加原型方法',
     '    HistoryManager.prototype.getHistoryKey = function(token) {',
     '      return \'imageRecognition_history_\' + token;',
     '    };',
-    
+
     '    HistoryManager.prototype.loadHistory = function(token) {',
     '      const history = localStorage.getItem(this.getHistoryKey(token));',
     '      return history ? JSON.parse(history) : [];',
     '    };',
-    
+
     '    HistoryManager.prototype.saveHistory = function(token, history) {',
     '      localStorage.setItem(this.getHistoryKey(token), JSON.stringify(history));',
     '    };',
-    
+
     '    HistoryManager.prototype.addHistory = function(token, imageData, result) {',
     '      const history = this.loadHistory(token);',
     '      const newRecord = {',
@@ -1083,24 +1083,24 @@ function getHTML() {
     '        result: result,',
     '        timestamp: new Date().toISOString()',
     '      };',
-    
+
     '      history.unshift(newRecord);',
     '      if (history.length > this.maxHistory) {',
     '        history.pop();',
     '      }',
-    
+
     '      this.saveHistory(token, history);',
     '      this.displayHistory(token);',
     '    };',
-    
+
     '    HistoryManager.prototype.displayHistory = function(token) {',
     '      const history = this.loadHistory(token);',
-          
+
     '      if (history.length === 0) {',
     '        historyList.innerHTML = \'<div class="no-history">暂无识别历史</div>\';',
     '        return;',
     '      }',
-    
+
     '      var html = \'\';',
     '      history.forEach((record, i) => {',
     '        // 确保 image 数据存在且格式正确',
@@ -1109,7 +1109,7 @@ function getHTML() {
     '          record.image : ',
     '          `data:image/png;base64,${record.image}`',
     '        );',
-    
+
     '        const timestamp = new Date(record.timestamp);',
     '        const timeStr = timestamp.toLocaleString(\'zh-CN\', {',
     '          year: \'numeric\',',
@@ -1118,7 +1118,7 @@ function getHTML() {
     '          hour: \'2-digit\',',
     '          minute: \'2-digit\'',
     '        });',
-    
+
     '        html += `',
     '          <div class="history-item" data-index="${i}">',
     '            <div class="history-image-container">',
@@ -1144,9 +1144,9 @@ function getHTML() {
     '          </div>',
     '        `;',
     '      });',
-    
+
     '      historyList.innerHTML = html;',
-    
+
     '      // 使用 waitForMathJax 函数处理公式渲染',
     '      waitForMathJax(() => {',
     '        try {',
@@ -1157,7 +1157,7 @@ function getHTML() {
     '        }',
     '      });',
     '    };',
-    
+
     '    // 初始化变量',
     '    const uploadArea = document.getElementById(\'uploadArea\');',
     '    const tokensInput = document.getElementById(\'tokenInput\');',
@@ -1173,11 +1173,11 @@ function getHTML() {
     '    const tokenList = document.getElementById(\'tokenList\');',
     '    const historySidebar = document.getElementById(\'historySidebar\');',
     '    const historyToggle = document.getElementById(\'historyToggle\');',
-    
+
     '    let currentToken = \'\';',
     '    let tokens = [];',
     '    const historyManager = new HistoryManager();',
-    
+
     '    // 从localStorage加载保存的tokens',
     '    function loadTokens() {',
     '      const savedTokens = localStorage.getItem(\'imageRecognitionTokens\');',
@@ -1189,7 +1189,7 @@ function getHTML() {
     '        }',
     '      }',
     '    }',
-    
+
     '    // 修改 updateTokenList 函数',
     '    function updateTokenList() {',
     '      tokenList.innerHTML = "";',
@@ -1208,7 +1208,7 @@ function getHTML() {
     '      });',
     '      tokenInput.value = tokens.join(",");',
     '    }',
-    
+
     '    // 保存tokens',
     '    saveTokensBtn.addEventListener(\'click\', () => {',
     '      const inputTokens = tokenInput.value.split(\',\').map(t => t.trim()).filter(t => t);',
@@ -1222,12 +1222,12 @@ function getHTML() {
     '        alert(\'请至少输入一个有效的Token\');',
     '      }',
     '    });',
-    
+
     '    // 侧边栏开关',
     '    sidebarToggle.addEventListener(\'click\', () => {',
     '      sidebar.classList.toggle(\'open\');',
     '    });',
-    
+
     '    // 处理文件上传和识别',
     '    async function processImage(file) {',
     '      if (!currentToken) {',
@@ -1235,7 +1235,7 @@ function getHTML() {
     '        sidebar.classList.add(\'open\');',
     '        return;',
     '      }',
-    
+
     '      // 显示图片预览',
     '      const reader = new FileReader();',
     '      let imageData;',
@@ -1245,16 +1245,16 @@ function getHTML() {
     '        previewImage.style.display = \'block\';',
     '      };',
     '      reader.readAsDataURL(file);',
-    
+
     '      // 显示加载动画',
     '      loading.style.display = \'block\';',
     '      resultContainer.classList.remove(\'show\');',
-    
+
     '      try {',
     '        // 上传文件',
     '        const formData = new FormData();',
     '        formData.append(\'file\', file);',
-    
+
     '        const uploadResponse = await fetch(\'https://chat.qwenlm.ai/api/v1/files/\', {',
     '          method: \'POST\',',
     '          headers: {',
@@ -1263,27 +1263,27 @@ function getHTML() {
     '          },',
     '          body: formData,',
     '        });',
-    
+
     '        const uploadData = await uploadResponse.json();',
     '        if (!uploadData.id) throw new Error(\'文件上传失败\');',
-    
+
     '        // 识别图片',
     '        const recognizeResponse = await fetch(\'/recognize\', {',
     '          method: \'POST\',',
     '          headers: { \'Content-Type\': \'application/json\' },',
-    '          body: JSON.stringify({ ', 
-    '            token: currentToken, ', 
-    '            imageId: uploadData.id ', 
+    '          body: JSON.stringify({ ',
+    '            token: currentToken, ',
+    '            imageId: uploadData.id ',
     '          }),',
     '        });',
-    
+
     '        const recognizeData = await recognizeResponse.json();',
-            
+
     '        // 修改这里：使用新的响应格式',
     '        if (!recognizeData.success) {',
     '          throw new Error(recognizeData.error || \'识别失败\');',
     '        }',
-    
+
     '        const result = recognizeData.result || \'识别失败\';',
     '        resultDiv.innerHTML = result;',
     '        waitForMathJax(() => {',
@@ -1301,7 +1301,7 @@ function getHTML() {
     '            resultContainer.classList.add(\'show\');',
     '          }',
     '        });',
-    
+
     '        // 添加到历史记录',
     '        historyManager.addHistory(currentToken, imageData, result);',
     '      } catch (error) {',
@@ -1313,17 +1313,17 @@ function getHTML() {
     '        loading.style.display = \'none\';',
     '      }',
     '    }',
-    
+
     '    // 文件拖放处理',
     '    uploadArea.addEventListener(\'dragover\', (e) => {',
     '      e.preventDefault();',
     '      uploadArea.classList.add(\'dragover\');',
     '    });',
-    
+
     '    uploadArea.addEventListener(\'dragleave\', () => {',
     '      uploadArea.classList.remove(\'dragover\');',
     '    });',
-    
+
     '    uploadArea.addEventListener(\'drop\', (e) => {',
     '      e.preventDefault();',
     '      uploadArea.classList.remove(\'dragover\');',
@@ -1332,7 +1332,7 @@ function getHTML() {
     '        processImage(file);',
     '      }',
     '    });',
-    
+
     '    // 点击上传',
     '    uploadArea.addEventListener(\'click\', (e) => {',
     '      // 如果点击的是 base64Input 或 toggleBase64 按钮，不触发文件上传',
@@ -1342,7 +1342,7 @@ function getHTML() {
     '          e.target.closest(\'#toggleBase64\')) {',
     '        return;',
     '      }',
-    
+
     '      const input = document.createElement(\'input\');',
     '      input.type = \'file\';',
     '      input.accept = \'image/*\';',
@@ -1352,7 +1352,7 @@ function getHTML() {
     '      };',
     '      input.click();',
     '    });',
-    
+
     '    // 粘贴处理',
     '    document.addEventListener(\'paste\', (e) => {',
     '      const file = e.clipboardData.files[0];',
@@ -1360,60 +1360,60 @@ function getHTML() {
     '        processImage(file);',
     '      }',
     '    });',
-    
+
     '    // 初始化',
     '    loadTokens();',
     '    if (currentToken) {',
     '      historyManager.displayHistory(currentToken);',
     '    }',
-    
+
     '    const modal = document.getElementById(\'imageModal\');',
     '    const modalImg = document.getElementById(\'modalImage\');',
-    
+
     '    function showFullImage(src) {',
     '      const modal = document.getElementById(\'imageModal\');',
     '      const modalImg = document.getElementById(\'modalImage\');',
-      
+
     '      if (!src) {',
     '        console.error(\'图片源为空\');',
     '        return;',
     '      }',
-    
+
     '      modal.style.display = \'block\';',
     '      modalImg.src = src;',
-      
+
     '      // 添加加载错误处理',
     '      modalImg.onerror = function() {',
     '        alert(\'图片加载失败\');',
     '        modal.style.display = \'none\';',
     '      };',
-    
+
     '      modalImg.style.opacity = \'0\';',
     '      setTimeout(() => {',
     '        modalImg.style.transition = \'opacity 0.3s ease\';',
     '        modalImg.style.opacity = \'1\';',
     '      }, 50);',
     '    }',
-    
+
     '    // 点击模态框关闭',
     '    modal.onclick = function() {',
     '      modal.style.display = "none";',
     '    }',
-    
+
     '    // ESC 键关闭模态框',
     '    document.addEventListener(\'keydown\', function(e) {',
     '      if (e.key === \'Escape\' && modal.style.display === \'block\') {',
     '        modal.style.display = \'none\';',
     '      }',
     '    });',
-    
+
     '    // 左侧历史记录边栏开关',
     '    historyToggle.addEventListener(\'click\', () => {',
     '      historySidebar.classList.toggle(\'open\');',
     '    });',
-    
+
     '    const copyBtn = document.getElementById(\'copyBtn\');',
-    
+
     '    // 复制结果功能',
     '    copyBtn.addEventListener(\'click\', async () => {',
     '      const result = resultDiv.textContent;',
@@ -1437,7 +1437,7 @@ function getHTML() {
     '    // Base64 输入相关功能',
     '    const base64Input = document.getElementById(\'base64Input\');',
     '    const toggleBase64 = document.getElementById(\'toggleBase64\');',
-    
+
     '    // 切换 Base64 输入框显示',
     '    toggleBase64.addEventListener(\'click\', (e) => {',
     '      e.stopPropagation(); // 阻止事件冒泡到 uploadArea',
@@ -1449,12 +1449,12 @@ function getHTML() {
     '        toggleBase64.textContent = \'切换Base64输入\';',
     '      }',
     '    });',
-    
+
     '    // 为 base64Input 添加阻止事件冒泡',
     '    document.getElementById(\'base64Input\').addEventListener(\'click\', (e) => {',
     '      e.stopPropagation(); // 阻止事件冒泡到 uploadArea',
     '    });',
-    
+
     '    // base64Input 的 input 事件处理也需要阻止冒泡',
     '    base64Input.addEventListener(\'input\', async (e) => {',
     '      e.stopPropagation();',
@@ -1468,7 +1468,7 @@ function getHTML() {
     '          } else {',
     '            imageData = \'data:image/png;base64,\' + base64Content;',
     '          }',
-    
+
     '          // 验证Base64是否为有效图片',
     '          const img = new Image();',
     '          img.src = imageData;',
@@ -1476,16 +1476,16 @@ function getHTML() {
     '            img.onload = resolve;',
     '            img.onerror = reject;',
     '          });',
-    
+
     '          // 转换Base64为Blob',
     '          const response = await fetch(imageData);',
     '          const blob = await response.blob();',
     '          const file = new File([blob], "image.png", { type: "image/png" });',
-    
+
     '          // 显示预览',
     '          previewImage.src = imageData;',
     '          previewImage.style.display = \'block\';',
-    
+
     '          // 处理图片',
     '          await processImage(file);',
     '        } catch (error) {',
@@ -1495,23 +1495,23 @@ function getHTML() {
     '        }',
     '      }',
     '    });',
-    
+
     '    // 复制历史记录结果',
     '    async function copyHistoryResult(index) {',
     '      const history = historyManager.loadHistory(currentToken);',
     '      const result = history[index]?.result;',
-      
+
     '      if (!result) {',
     '        alert(\'无法复制：结果为空\');',
     '        return;',
     '      }',
-    
+
     '      try {',
     '        await navigator.clipboard.writeText(result);',
     '        const btn = event.target;',
     '        btn.textContent = \'已复制\';',
     '        btn.classList.add(\'copied\');',
-        
+
     '        setTimeout(() => {',
     '          btn.textContent = \'复制结果\';',
     '          btn.classList.remove(\'copied\');',
@@ -1521,7 +1521,7 @@ function getHTML() {
     '        alert(\'复制失败，请手动复制\');',
     '      }',
     '    }',
-    
+
     '    // 删除历史记录项',
     '    function deleteHistoryItem(index) {',
     '      const history = historyManager.loadHistory(currentToken);',
@@ -1529,7 +1529,7 @@ function getHTML() {
     '        alert(\'该记录不存在\');',
     '        return;',
     '      }',
-    
+
     '      if (confirm(\'确定要删除这条历史记录吗？\')) {',
     '        history.splice(index, 1);',
     '        historyManager.saveHistory(currentToken, history);',
@@ -1543,3 +1543,4 @@ function getHTML() {
 
   return html;
 }
+
