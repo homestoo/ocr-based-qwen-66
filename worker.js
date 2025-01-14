@@ -1135,7 +1135,7 @@ function getHTML() {
     '              <div class="history-header">',
     '                <span class="history-time">${timeStr}</span>',
     '                <div class="history-actions">',
-    '                  <button class="action-btn copy-btn" onclick="event.stopPropagation(); copyHistoryResult(${i})">复制结果</button>',
+    '                  <button class="action-btn copy-btn" onclick="event.stopPropagation(); copyHistoryResult(${i}, this)">复制结果</button>',
     '                  <button class="action-btn delete-btn" onclick="event.stopPropagation(); deleteHistoryItem(${i})">删除</button>',
     '                </div>',
     '              </div>',
@@ -1285,6 +1285,12 @@ function getHTML() {
     '        }',
 
     '        const result = recognizeData.result || \'识别失败\';',
+    '        // 保存原始文本到属性中，确保 LaTeX 格式完整',
+    '        const formattedResult = result',
+    '          .replace(/\$\$(.*?)\$\$/g, (_, formula) => `$${formula}$$`)',
+    '          .replace(/\$([^$]+)\$/g, (_, formula) => `$${formula}$`);',
+
+    '        resultDiv.setAttribute(\'data-original-text\', formattedResult);',
     '        resultDiv.innerHTML = result;',
     '        waitForMathJax(() => {',
     '          try {',
@@ -1414,11 +1420,14 @@ function getHTML() {
 
     '    const copyBtn = document.getElementById(\'copyBtn\');',
 
-    '    // 复制结果功能',
+    '    // 修改复制结果功能，保持完整的 LaTeX 格式',
     '    copyBtn.addEventListener(\'click\', async () => {',
-    '      const result = resultDiv.textContent;',
-    '        toggleBase64.textContent = \'隐藏Base64输入\';',
+    '      // 获取原始文本（包含完整的 LaTeX 格式）',
+    '      const result = resultDiv.getAttribute(\'data-original-text\');',
+    '      if (!result) return;',
+
     '      try {',
+    '        // 直接复制包含 LaTeX 标记的文本',
     '        await navigator.clipboard.writeText(result);',
     '        copyBtn.textContent = \'已复制\';',
     '        copyBtn.classList.add(\'copied\');',
@@ -1430,10 +1439,12 @@ function getHTML() {
     '        console.error(\'复制失败:\', err);',
     '      }',
     '    });',
+
     '    // 添加关闭侧边栏的功能',
     '    document.getElementById("closeSidebar").addEventListener("click", () => {',
     '      sidebar.classList.remove("open");',
     '    });',
+
     '    // Base64 输入相关功能',
     '    const base64Input = document.getElementById(\'base64Input\');',
     '    const toggleBase64 = document.getElementById(\'toggleBase64\');',
@@ -1496,29 +1507,46 @@ function getHTML() {
     '      }',
     '    });',
 
-    '    // 复制历史记录结果',
-    '    async function copyHistoryResult(index) {',
-    '      const history = historyManager.loadHistory(currentToken);',
-    '      const result = history[index]?.result;',
-
-    '      if (!result) {',
-    '        alert(\'无法复制：结果为空\');',
-    '        return;',
-    '      }',
-
+    '    // 复制历史记录结果，保持完整的 LaTeX 格式',
+    '    async function copyHistoryResult(index, btn) {',
     '      try {',
-    '        await navigator.clipboard.writeText(result);',
-    '        const btn = event.target;',
+    '        const history = historyManager.loadHistory(currentToken);',
+    '        const result = history[index]?.result;',
+
+    '        if (!result) {',
+    '          throw new Error(\'无法复制：结果为空\');',
+    '        }',
+
+    '        // 使用临时输入框来执行复制',
+    '        const tempInput = document.createElement(\'textarea\');',
+    '        tempInput.value = result;',
+    '        document.body.appendChild(tempInput);',
+    '        tempInput.select();',
+        
+    '        // 尝试使用 execCommand 作为后备方案',
+    '        if (!navigator.clipboard) {',
+    '          document.execCommand("copy");',
+    '          tempInput.remove();',
+    '        } else {',
+    '          // 优先使用 clipboard API',
+    '          await navigator.clipboard.writeText(result);',
+    '          tempInput.remove();',
+    '        }',
+
+    '        // 更新按钮状态 - 使用传入的按钮元素',
     '        btn.textContent = \'已复制\';',
     '        btn.classList.add(\'copied\');',
-
+        
     '        setTimeout(() => {',
     '          btn.textContent = \'复制结果\';',
     '          btn.classList.remove(\'copied\');',
     '        }, 2000);',
+        
+    '        return true;',
     '      } catch (err) {',
     '        console.error(\'复制失败:\', err);',
-    '        alert(\'复制失败，请手动复制\');',
+    '        alert(\'复制失败: \' + err.message);',
+    '        return false;',
     '      }',
     '    }',
 
