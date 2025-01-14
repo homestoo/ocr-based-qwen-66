@@ -188,14 +188,15 @@ async function recognizeImage(token, imageId) {
           content: [
             { 
               type: 'text', 
-              text: '请识别图片中的内容。对于数学公式和数学符号，请使用标准的LaTeX格式输出。' +
-                    '要求：\n' +
-                    '1. 所有数学公式和单个数学符号都要用LaTeX格式\n' +
-                    '2. 普通文本保持原样\n' +
-                    '3. 对于行内公式使用$单个符号$\n' +
-                    '4. 对于独立公式块使用$$公式$$\n' +
-                    '5. 严格保持原文的段落格式和换行\n' +
-                    '6. 当文本明显换行时，使用\\n进行换行处理'
+              text: '请识别图片中的内容，并按以下要求输出：\n' +
+                    '1. 所有数学公式和数学符号都必须使用标准的LaTeX格式\n' +
+                    '2. 行内公式使用单个$符号包裹，如：$x^2$\n' +
+                    '3. 独立公式块使用两个$$符号包裹，如：$$\\sum_{i=1}^n i^2$$\n' +
+                    '4. 普通文本保持原样，不要使用LaTeX格式\n' +
+                    '5. 保持原文的段落格式和换行\n' +
+                    '6. 明显的换行使用\\n表示\n' +
+                    '7. 不要输出任何额外的解释或说明\n' +
+                    '8. 确保所有数学符号都被正确包裹在$或$$中'
             },
             { type: 'image', image: imageId },
           ],
@@ -209,13 +210,17 @@ async function recognizeImage(token, imageId) {
 
   const data = await response.json();
   
-  // 处理识别结果
+  // 处理识别结果，增加额外的格式化步骤
   let result = data.choices[0]?.message?.content || '识别失败';
   result = result
     .replace(/\\（/g, '\\(')
     .replace(/\\）/g, '\\)')
     .replace(/\n{3,}/g, '\n\n')
     .replace(/([^\n])\n([^\n])/g, '$1\n$2')
+    // 确保数学公式被正确包裹
+    .replace(/\$\s+/g, '$')
+    .replace(/\s+\$/g, '$')
+    .replace(/\$\$/g, '$$')
     .trim();
 
   return new Response(JSON.stringify({ 
@@ -240,7 +245,6 @@ function getHTML() {
     
     // 添加 MathJax 支持
     '<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>',
-    '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>',
     '<script>',
     'window.MathJax = {',
     '  tex: {',
@@ -248,9 +252,34 @@ function getHTML() {
     '    displayMath: [["$$", "$$"]]',
     '  },',
     '  startup: {',
-    '    typeset: false',
+    '    pageReady: () => {',
+    '      return MathJax.startup.defaultPageReady().then(() => {',
+    '        // MathJax 加载完成后刷新历史记录',
+    '        if (currentToken) {',
+    '          historyManager.displayHistory(currentToken);',
+    '        }',
+    '      });',
+    '    }',
+    '  },',
+    '  options: {',
+    '    enableMenu: false',
     '  }',
     '};',
+    '</script>',
+    '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>',
+    '<script>',
+    'function waitForMathJax(callback, maxTries = 30) {',
+    '  let tries = 0;',
+    '  const checkMathJax = () => {',
+    '    tries++;',
+    '    if (window.MathJax && window.MathJax.typesetPromise) {',
+    '      callback();',
+    '    } else if (tries < maxTries) {',
+    '      setTimeout(checkMathJax, 100);',
+    '    }',
+    '  };',
+    '  checkMathJax();',
+    '}',
     '</script>',
     
     '<style>',
@@ -1053,8 +1082,14 @@ function getHTML() {
     '      }',
     
     '      var html = \'\';',
-    '      for (var i = 0; i < history.length; i++) {',
-    '        var record = history[i];',
+    '      history.forEach((record, i) => {',
+    '        // 确保 image 数据存在且格式正确',
+    '        const imageUrl = record.image && (',
+    '          record.image.startsWith(\'data:\') ? ',
+    '          record.image : ',
+    '          `data:image/png;base64,${record.image}`',
+    '        );',
+    
     '        const timestamp = new Date(record.timestamp);',
     '        const timeStr = timestamp.toLocaleString(\'zh-CN\', {',
     '          year: \'numeric\',',
@@ -1063,30 +1098,44 @@ function getHTML() {
     '          hour: \'2-digit\',',
     '          minute: \'2-digit\'',
     '        });',
-    '        html += \'<div class="history-item">\';',
-    '        html += \'<div class="history-image-container">\';',
-    '        html += \'<img src="\' + record.image + \'" class="history-image" alt="历史图片" onclick="showFullImage(this.src)">\';',
-    '        html += \'<div class="image-overlay">\';',
-    '        html += \'<button class="overlay-btn" onclick="showFullImage(\\\'\' + record.image + \'\\\')">查看大图</button>\';',
-    '        html += \'</div>\';',
-    '        html += \'</div>\';',
     
-    '        html += \'<div class="history-content">\';',
-    '        html += \'<div class="history-header">\';',
-    '        html += \'<span class="history-time">\' + timeStr + \'</span>\';',
-    '        html += \'<div class="history-actions">\';',
-    '        html += \'<button class="action-btn copy-btn" onclick="copyHistoryResult(\' + i + \')">复制结果</button>\';',
-    '        html += \'<button class="action-btn delete-btn" onclick="deleteHistoryItem(\' + i + \')">删除</button>\';',
-    '        html += \'</div>\';',
-    '        html += \'</div>\';',
-    '        html += \'<div class="history-text">\' + record.result + \'</div>\';',
-    '        html += \'</div>\';',
-    '        html += \'</div>\';',
-    '      }',
+    '        html += `',
+    '          <div class="history-item" data-index="${i}">',
+    '            <div class="history-image-container">',
+    '              <img src="${imageUrl}" ',
+    '                   class="history-image" ',
+    '                   alt="历史图片" ',
+    '                   onerror="this.src=\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=\'"',
+    '                   onclick="event.stopPropagation(); showFullImage(\'${imageUrl}\')">',
+    '              <div class="image-overlay">',
+    '                <button class="overlay-btn" onclick="event.stopPropagation(); showFullImage(\'${imageUrl}\')">查看大图</button>',
+    '              </div>',
+    '            </div>',
+    '            <div class="history-content">',
+    '              <div class="history-header">',
+    '                <span class="history-time">${timeStr}</span>',
+    '                <div class="history-actions">',
+    '                  <button class="action-btn copy-btn" onclick="event.stopPropagation(); copyHistoryResult(${i})">复制结果</button>',
+    '                  <button class="action-btn delete-btn" onclick="event.stopPropagation(); deleteHistoryItem(${i})">删除</button>',
+    '                </div>',
+    '              </div>',
+    '              <div class="history-text">${record.result || \'无识别结果\'}</div>',
+    '            </div>',
+    '          </div>',
+    '        `;',
+    '      });',
+    
     '      historyList.innerHTML = html;',
     
-    '      // 渲染数学公式',
-    '      MathJax.typesetPromise([historyList]);',
+    '      // 使用 waitForMathJax 函数处理公式渲染',
+    '      waitForMathJax(() => {',
+    '        try {',
+    '          MathJax.typesetPromise([historyList])',
+    '            .catch(err => console.error("MathJax渲染错误:", err));',
+    '        } catch (err) {',
+    '          console.error("MathJax处理错误:", err);',
+    '        }',
+    '      });',
     '    };',
     
     '    // 初始化变量',
@@ -1216,9 +1265,21 @@ function getHTML() {
     '        }',
     
     '        const result = recognizeData.result || \'识别失败\';',
-    '        resultDiv.innerHTML = result;   // 使用innerHTML而不是textContent以支持公式渲染',
-    '        MathJax.typesetPromise([resultDiv]).then(() => {',  // 渲染数学公式',
-    '          resultContainer.classList.add(\'show\');',
+    '        resultDiv.innerHTML = result;',
+    '        waitForMathJax(() => {',
+    '          try {',
+    '            MathJax.typesetPromise([resultDiv])',
+    '              .then(() => {',
+    '                resultContainer.classList.add(\'show\');',
+    '              })',
+    '              .catch(err => {',
+    '                console.error("MathJax渲染错误:", err);',
+    '                resultContainer.classList.add(\'show\');',
+    '              });',
+    '          } catch (err) {',
+    '            console.error("MathJax处理错误:", err);',
+    '            resultContainer.classList.add(\'show\');',
+    '          }',
     '        });',
     
     '        // 添加到历史记录',
@@ -1290,13 +1351,27 @@ function getHTML() {
     '    const modalImg = document.getElementById(\'modalImage\');',
     
     '    function showFullImage(src) {',
-    '      modal.style.display = "block";',
-    '      modalImg.src = src;',
-    '      modalImg.style.opacity = "0";',
+    '      const modal = document.getElementById(\'imageModal\');',
+    '      const modalImg = document.getElementById(\'modalImage\');',
+      
+    '      if (!src) {',
+    '        console.error(\'图片源为空\');',
+    '        return;',
+    '      }',
     
+    '      modal.style.display = \'block\';',
+    '      modalImg.src = src;',
+      
+    '      // 添加加载错误处理',
+    '      modalImg.onerror = function() {',
+    '        alert(\'图片加载失败\');',
+    '        modal.style.display = \'none\';',
+    '      };',
+    
+    '      modalImg.style.opacity = \'0\';',
     '      setTimeout(() => {',
-    '        modalImg.style.transition = "opacity 0.3s ease";',
-    '        modalImg.style.opacity = "1";',
+    '        modalImg.style.transition = \'opacity 0.3s ease\';',
+    '        modalImg.style.opacity = \'1\';',
     '      }, 50);',
     '    }',
     
@@ -1404,27 +1479,38 @@ function getHTML() {
     '    // 复制历史记录结果',
     '    async function copyHistoryResult(index) {',
     '      const history = historyManager.loadHistory(currentToken);',
-    '      const result = history[index].result;',
+    '      const result = history[index]?.result;',
+      
+    '      if (!result) {',
+    '        alert(\'无法复制：结果为空\');',
+    '        return;',
+    '      }',
+    
     '      try {',
     '        await navigator.clipboard.writeText(result);',
     '        const btn = event.target;',
     '        btn.textContent = \'已复制\';',
-    '        btn.style.background = \'#27ae60\';',
-    '        btn.style.color = \'#fff\';',
+    '        btn.classList.add(\'copied\');',
+        
     '        setTimeout(() => {',
     '          btn.textContent = \'复制结果\';',
-    '          btn.style.background = \'none\';',
-    '          btn.style.color = \'#3498db\';',
+    '          btn.classList.remove(\'copied\');',
     '        }, 2000);',
     '      } catch (err) {',
     '        console.error(\'复制失败:\', err);',
+    '        alert(\'复制失败，请手动复制\');',
     '      }',
     '    }',
     
     '    // 删除历史记录项',
     '    function deleteHistoryItem(index) {',
+    '      const history = historyManager.loadHistory(currentToken);',
+    '      if (!history[index]) {',
+    '        alert(\'该记录不存在\');',
+    '        return;',
+    '      }',
+    
     '      if (confirm(\'确定要删除这条历史记录吗？\')) {',
-    '        const history = historyManager.loadHistory(currentToken);',
     '        history.splice(index, 1);',
     '        historyManager.saveHistory(currentToken, history);',
     '        historyManager.displayHistory(currentToken);',
