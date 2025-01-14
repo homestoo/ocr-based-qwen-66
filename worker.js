@@ -188,15 +188,21 @@ async function recognizeImage(token, imageId) {
           content: [
             { 
               type: 'text', 
-              text: '请识别图片中的内容，并按以下要求输出：\n' +
+              text: '请识别图片中的内容，注意以下要求：\n' +
+                    '对于数学公式和普通文本：\n' +
                     '1. 所有数学公式和数学符号都必须使用标准的LaTeX格式\n' +
                     '2. 行内公式使用单个$符号包裹，如：$x^2$\n' +
                     '3. 独立公式块使用两个$$符号包裹，如：$$\\sum_{i=1}^n i^2$$\n' +
                     '4. 普通文本保持原样，不要使用LaTeX格式\n' +
                     '5. 保持原文的段落格式和换行\n' +
                     '6. 明显的换行使用\\n表示\n' +
-                    '7. 不要输出任何额外的解释或说明\n' +
-                    '8. 确保所有数学符号都被正确包裹在$或$$中'
+                    '7. 确保所有数学符号都被正确包裹在$或$$中\n\n' +
+                    '对于验证码图片：\n' +
+                    '1. 只输出验证码字符，不要加任何额外解释\n' +
+                    '2. 忽略干扰线和噪点\n' +
+                    '3. 注意区分相似字符，如0和O、1和l、2和Z等\n' +
+                    '4. 验证码通常为4-6位字母数字组合\n\n' +
+                    '不要输出任何额外的解释或说明'
             },
             { type: 'image', image: imageId },
           ],
@@ -209,15 +215,28 @@ async function recognizeImage(token, imageId) {
   });
 
   const data = await response.json();
-  
-  // 处理识别结果，增加额外的格式化步骤
   let result = data.choices[0]?.message?.content || '识别失败';
+  
+  // 如果结果长度小于10且只包含字母数字，很可能是验证码
+  if (result.length <= 10 && /^[A-Za-z0-9]+$/.test(result)) {
+    return new Response(JSON.stringify({ 
+      success: true,
+      result: result.toUpperCase(), // 验证码统一转大写
+      type: 'captcha'
+    }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
+  }
+
+  // 其他情况（数学公式和普通文本）的处理
   result = result
     .replace(/\\（/g, '\\(')
     .replace(/\\）/g, '\\)')
     .replace(/\n{3,}/g, '\n\n')
     .replace(/([^\n])\n([^\n])/g, '$1\n$2')
-    // 确保数学公式被正确包裹
     .replace(/\$\s+/g, '$')
     .replace(/\s+\$/g, '$')
     .replace(/\$\$/g, '$$')
@@ -225,7 +244,8 @@ async function recognizeImage(token, imageId) {
 
   return new Response(JSON.stringify({ 
     success: true,
-    result: result 
+    result: result,
+    type: 'text'
   }), {
     headers: {
       'Content-Type': 'application/json',
