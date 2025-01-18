@@ -1638,6 +1638,20 @@ function getHTML() {
     '          loading.style.display = \'block\';',
     '          resultContainer.classList.remove(\'show\');',
 
+    '          // 先获取图片并转换为base64',
+    '          let imageData;',
+    '          try {',
+    '            const imgResponse = await fetch(imageUrl);',
+    '            const blob = await imgResponse.blob();',
+    '            imageData = await new Promise((resolve) => {',
+    '              const reader = new FileReader();',
+    '              reader.onloadend = () => resolve(reader.result);',
+    '              reader.readAsDataURL(blob);',
+    '            });',
+    '          } catch (error) {',
+    '            throw new Error(\'图片URL无法访问或格式不正确\');',
+    '          }',
+
     '          // 调用URL识别API',
     '          const response = await fetch(\'/api/recognize/url\', {',
     '            method: \'POST\',',
@@ -1654,7 +1668,7 @@ function getHTML() {
     '          }',
 
     '          // 显示预览图',
-    '          previewImage.src = imageUrl;',
+    '          previewImage.src = imageData; // 使用base64数据',
     '          previewImage.style.display = \'block\';',
 
     '          // 显示结果',
@@ -1677,8 +1691,9 @@ function getHTML() {
     '            }',
     '          });',
 
-    '          // 添加到历史记录',
-    '          historyManager.addHistory(currentToken, imageUrl, result);',
+    '          // 添加到历史记录 - 使用base64图片数据而不是URL',
+    '          historyManager.addHistory(currentToken, imageData, result);',
+
     '        } catch (error) {',
     '          resultDiv.textContent = \'处理失败: \' + error.message;',
     '          resultContainer.classList.add(\'show\');',
@@ -1687,7 +1702,7 @@ function getHTML() {
     '          loading.style.display = \'none\';',
     '        }',
     '      }',
-    '    }, 1000));', // 1秒防抖',
+    '    }, 1000)); // 1秒防抖',
 
     '    // 防抖函数',
     '    function debounce(func, wait) {',
