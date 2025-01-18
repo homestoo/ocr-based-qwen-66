@@ -3,7 +3,7 @@
 本项目是对 [QwenLM](https://chat.qwenlm.ai/) 的 OCR 功能进行逆向工程的实现。通过调用 QwenLM 的 API，你可以从图片中提取文字内容，并且该项目支持一键部署到 **Cloudflare Workers** (CF) 上。
 
 ## 项目展示
-![image](https://github.com/user-attachments/assets/6a292a81-98e4-4f6d-8759-a310c95499b1)
+![image](https://github.com/user-attachments/assets/496c4825-9198-4c56-b669-6b5a62195ee2)
 
 ## 🚀 功能特性
 
@@ -32,7 +32,9 @@
 ## 🧩 使用说明
 
 1. **设置 Token**：
-   - 前往 [QwenLM](https://chat.qwenlm.ai/) 获取 Token。
+   - 前往 [QwenLM](https://chat.qwenlm.ai/) 获取 Bearer后面的Token。
+      ![image](https://github.com/user-attachments/assets/9fa3ea04-da2b-4756-a091-83c0665f62f3)
+
    - 点击右上角的 **⚙️ Token设置** 按钮。
    - 输入你的 QwenLM API Token（多个 Token 用英文逗号分隔）。
    - 点击 **保存**。
