@@ -1,14 +1,13 @@
 重要声明
-由于本项目是对 QwenLM 的逆向工程实现，仅供学习和研究使用。任何商业用途或滥用行为均与作者无关。请遵守相关法律法规和平台的使用条款。
+项目性质：本项目是对 QwenLM 的逆向工程实现，仅供学习和研究使用。
+免责声明：任何商业用途或滥用行为均与作者无关。
+法律合规：使用者需遵守相关法律法规和平台的使用条款。
 
 开源协议 (LICENSE)
-本项目采用 MIT 许可证，明确限制仅用于学习和研究目的。以下是 LICENSE 文件内容：
+本项目采用 MIT 许可证，明确限制仅用于学习和研究目的。以下是 LICENSE 文件内容的补充说明：
 
-```
 MIT License
-
 Copyright (c) 2025 [cunninger]
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -22,6 +21,8 @@ furnished to do so, subject to the following conditions:
 2. The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
+3. If you modify or distribute the Software, you must include a reference to the original project's open-source address: https://github.com/Cunninger/ocr-based-qwen.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,4 +30,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-```
+
+补充说明
+二次开发声明：如果您对项目进行二次开发或分发，必须声明本项目的开源地址：https://github.com/Cunninger/ocr-based-qwen。
+请确保在使用或修改本项目时遵守上述条款和条件。
