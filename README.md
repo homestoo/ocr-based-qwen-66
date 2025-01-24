@@ -3,7 +3,7 @@
 本项目是对 [QwenLM](https://chat.qwenlm.ai/) 的 OCR 功能进行逆向工程的实现。通过调用 QwenLM 的 API，你可以从图片中提取文字内容，并且该项目支持一键部署到 **Cloudflare Workers** (CF) 上。
 
 ## 项目展示
-![image](https://github.com/user-attachments/assets/496c4825-9198-4c56-b669-6b5a62195ee2)
+![image](https://github.com/user-attachments/assets/9e794686-f914-4fb7-9931-1ada7c22bb2d)
 
 ## 🚀 功能特性
 
@@ -137,4 +137,4 @@ curl --location 'https://ocr.doublefenzhuan.me/api/recognize/url' \
 ![image](https://github.com/user-attachments/assets/db0c89f9-96f1-45b1-b1e9-88ac3d01e196)
 
 ## 趋势
-[![Star History Chart](https://api.star-history.com/svg?repos=cunninger/ocr-based-qwen&type=Date&v=20250114)](https://star-history.com/#Cunninger/ocr-based-qwen&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=cunninger/ocr-based-qwen&type=Date&v=20251114)](https://star-history.com/#Cunninger/ocr-based-qwen&Date)
