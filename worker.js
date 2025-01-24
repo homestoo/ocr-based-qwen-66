@@ -39,6 +39,13 @@ async function handleRequest(request) {
       }
       break;
 
+    // 添加代理路由
+    case '/proxy/upload':
+      if (request.method === 'POST') {
+        return handleProxyUpload(request);
+      }
+      break;
+
     // 返回前端界面
     case '/':
       return new Response(getHTML(), {
@@ -166,6 +173,42 @@ async function handleFileRecognition(request) {
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+// 添加代理处理函数
+async function handleProxyUpload(request) {
+  try {
+    const formData = await request.formData();
+    const token = request.headers.get('Authorization').replace('Bearer ', '');
+    
+    const response = await fetch('https://chat.qwenlm.ai/api/v1/files/', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+    
+    return new Response(JSON.stringify(data), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({
+      error: error.message || 'Proxy upload failed'
+    }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
     });
   }
 }
@@ -1175,7 +1218,7 @@ function getHTML() {
     '        const timeStr = timestamp.toLocaleString(\'zh-CN\', {',
     '          year: \'numeric\',',
     '          month: \'2-digit\',',
-    '          day: \'2-digit\',',
+    '          day: \'2-digit\',
     '          hour: \'2-digit\',',
     '          minute: \'2-digit\'',
     '        });',
@@ -1316,11 +1359,10 @@ function getHTML() {
     '        const formData = new FormData();',
     '        formData.append(\'file\', file);',
 
-    '        const uploadResponse = await fetch(\'https://chat.qwenlm.ai/api/v1/files/\', {',
+    '        const uploadResponse = await fetch(\'/proxy/upload\', {',
     '          method: \'POST\',',
     '          headers: {',
-    '            \'accept\': \'application/json\',',
-    '            \'authorization\': \'Bearer \' + currentToken,',
+    '            \'Authorization\': \'Bearer \' + currentToken,',
     '          },',
     '          body: formData,',
     '        });',
