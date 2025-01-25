@@ -135,6 +135,8 @@ curl --location 'https://ocr.doublefenzhuan.me/api/recognize/url' \
 ```
 - 效果图：
 ![image](https://github.com/user-attachments/assets/db0c89f9-96f1-45b1-b1e9-88ac3d01e196)
+## Cloudflare访问数据
+![image](https://github.com/user-attachments/assets/bb456075-6107-47ee-a361-a0edba532c38)
 
 ## 趋势
 [![Star History Chart](https://api.star-history.com/svg?repos=cunninger/ocr-based-qwen&type=Date&v=20251114)](https://star-history.com/#Cunninger/ocr-based-qwen&Date)
