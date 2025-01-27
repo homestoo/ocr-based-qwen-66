@@ -224,7 +224,7 @@ async function recognizeImage(token, imageId) {
     },
     body: JSON.stringify({
       stream: false,
-      model: 'qwen-vl-max-latest',
+      model: 'qwen2.5-vl-72b-instruct',
       messages: [
         {
           role: 'user',
