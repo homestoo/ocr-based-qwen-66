@@ -34,12 +34,12 @@ cna=LI8HIAirQyACAWrg3cNOjH8F; _gcl_au=1.1.1200556497.1736728490; xlly_s=1; acw_t
 
 ## 🧩 使用说明
 
-1. **设置 Token**：
-   - 前往 [QwenLM](https://chat.qwenlm.ai/) 获取 Bearer后面的Token。
-      ![image](https://github.com/user-attachments/assets/9fa3ea04-da2b-4756-a091-83c0665f62f3)
+1. **设置 Cookie**：
+   - 前往 [QwenLM](https://chat.qwenlm.ai/) 获取对话请求中的 Cookie。
+   ![alt text](image.png)
 
-   - 点击右上角的 **⚙️ Token设置** 按钮。
-   - 输入你的 QwenLM API Token（多个 Token 用英文逗号分隔）。
+   - 点击右上角的 **⚙️ Cookie设置** 按钮。
+   - 输入你的 Cookie（或者使用测试Cookie）。
    - 点击 **保存**。
 
 2. **上传图片**：
