@@ -60,16 +60,29 @@ async function handleRequest(request) {
 // 处理图片URL识别
 async function handleImageUrlRecognition(request) {
   try {
-    const { token, imageUrl } = await request.json();
+    const { imageUrl } = await request.json();
+    const cookie = request.headers.get('x-custom-cookie');
 
-    if (!token || !imageUrl) {
+    if (!cookie || !imageUrl) {
       return new Response(JSON.stringify({
-        error: 'Missing token or imageUrl'
+        error: 'Missing cookie or imageUrl'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    // 从cookie中提取token
+    const tokenMatch = cookie.match(/token=([^;]+)/);
+    if (!tokenMatch) {
+      return new Response(JSON.stringify({
+        error: 'Invalid cookie format: missing token'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const token = tokenMatch[1];
 
     // 下载图片
     const imageResponse = await fetch(imageUrl);
@@ -84,6 +97,7 @@ async function handleImageUrlRecognition(request) {
       headers: {
         'accept': 'application/json',
         'authorization': `Bearer ${token}`,
+        'cookie': cookie
       },
       body: formData,
     });
@@ -91,8 +105,8 @@ async function handleImageUrlRecognition(request) {
     const uploadData = await uploadResponse.json();
     if (!uploadData.id) throw new Error('File upload failed');
 
-    // 调用识别API
-    return await recognizeImage(token, uploadData.id);
+    // 调用通用识别函数
+    return await recognizeImage(token, uploadData.id, request);
   } catch (error) {
     return new Response(JSON.stringify({
       error: error.message || 'Internal Server Error'
@@ -106,22 +120,32 @@ async function handleImageUrlRecognition(request) {
 // 处理Base64识别
 async function handleBase64Recognition(request) {
   try {
-    const { token, base64Image } = await request.json();
+    const { base64Image } = await request.json();
+    const cookie = request.headers.get('x-custom-cookie');
 
-    if (!token || !base64Image) {
+    if (!cookie || !base64Image) {
       return new Response(JSON.stringify({
-        error: 'Missing token or base64Image'
+        error: 'Missing cookie or base64Image'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    // 转换Base64为Blob
-    const imageData = base64Image.startsWith('data:') ?
-      base64Image :
-      'data:image/png;base64,' + base64Image;
+    // 从cookie中提取token
+    const tokenMatch = cookie.match(/token=([^;]+)/);
+    if (!tokenMatch) {
+      return new Response(JSON.stringify({
+        error: 'Invalid cookie format: missing token'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const token = tokenMatch[1];
 
+    // 转换Base64为Blob
+    const imageData = base64Image.startsWith('data:') ? base64Image : 'data:image/png;base64,' + base64Image;
     const response = await fetch(imageData);
     const blob = await response.blob();
 
@@ -134,6 +158,7 @@ async function handleBase64Recognition(request) {
       headers: {
         'accept': 'application/json',
         'authorization': `Bearer ${token}`,
+        'cookie': cookie
       },
       body: formData,
     });
@@ -141,8 +166,8 @@ async function handleBase64Recognition(request) {
     const uploadData = await uploadResponse.json();
     if (!uploadData.id) throw new Error('File upload failed');
 
-    // 调用识别API
-    return await recognizeImage(token, uploadData.id);
+    // 调用通用识别函数
+    return await recognizeImage(token, uploadData.id, request);
   } catch (error) {
     return new Response(JSON.stringify({
       error: error.message || 'Internal Server Error'
@@ -156,18 +181,23 @@ async function handleBase64Recognition(request) {
 // 处理文件识别 (原有功能)
 async function handleFileRecognition(request) {
   try {
-    const { token, imageId } = await request.json();
+    const { imageId } = await request.json();
+    const cookie = request.headers.get('x-custom-cookie') || '';
 
-    if (!token || !imageId) {
+    if (!cookie || !imageId) {
       return new Response(JSON.stringify({
-        error: 'Missing token or imageId'
+        error: 'Missing cookie or imageId'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    return await recognizeImage(token, imageId, request); // 传递 request 对象
+    // 从cookie中提取token
+    const tokenMatch = cookie.match(/token=([^;]+)/);
+    const token = tokenMatch ? tokenMatch[1] : '';
+
+    return await recognizeImage(token, imageId, request);
   } catch (error) {
     return new Response(JSON.stringify({
       error: error.message || 'Internal Server Error'
@@ -182,13 +212,18 @@ async function handleFileRecognition(request) {
 async function handleProxyUpload(request) {
   try {
     const formData = await request.formData();
-    const token = request.headers.get('Authorization').replace('Bearer ', '');
+    const cookie = request.headers.get('x-custom-cookie') || '';
+    
+    // 从cookie中提取token
+    const tokenMatch = cookie.match(/token=([^;]+)/);
+    const token = tokenMatch ? tokenMatch[1] : '';
     
     const response = await fetch('https://chat.qwenlm.ai/api/v1/files/', {
       method: 'POST',
       headers: {
         'accept': 'application/json',
         'authorization': `Bearer ${token}`,
+        'cookie': cookie
       },
       body: formData,
     });
@@ -216,7 +251,7 @@ async function handleProxyUpload(request) {
 
 // 通用的识别函数
 async function recognizeImage(token, imageId, request) {
-  // 从请求头获取 cookie
+  const cookie = request.headers.get('x-custom-cookie') || '';
   const response = await fetch('https://chat.qwenlm.ai/api/chat/completions', {
     method: 'POST',
     headers: {
@@ -224,7 +259,7 @@ async function recognizeImage(token, imageId, request) {
       'User-Agent': 'PostmanRuntime/7.43.0', 
       'accept': '*/*',
       'authorization': `Bearer ${token}`,
-      'cookie': request.headers.get('x-custom-cookie') || '', // 使用自定义请求头中的 cookie
+      'cookie': cookie,
     },
     body: JSON.stringify({
       stream: false,
@@ -1015,7 +1050,6 @@ function getHTML() {
     '      background: rgba(255, 255, 255, 0.9);',
     '      backdrop-filter: blur(5px);',
     '      z-index: 900;',
-    '      border-top: 1px solid rgba(0, 0, 0, 0.1);',
     ' display: flex;',           
     '      justify-content: center;', 
     '      align-items: center;',     
@@ -1421,6 +1455,12 @@ function getHTML() {
     '      }',
 
     '      const savedCookie = localStorage.getItem(\'imageRecognitionCookie\');',
+    '      if (!savedCookie) {',
+    '        alert(\'请先设置Cookie\');',
+    '        sidebar.classList.add(\'open\');',
+    '        return;',
+    '      }',
+
     '      // 显示图片预览',
     '      const reader = new FileReader();',
     '      let imageData;',
@@ -1443,8 +1483,7 @@ function getHTML() {
     '        const uploadResponse = await fetch(\'/proxy/upload\', {',
     '          method: \'POST\',',
     '          headers: {',
-    '            \'Authorization\': \'Bearer \' + currentToken,',
-    '            \'x-custom-cookie\': savedCookie || \'\', // 添加 cookie 到请求头',
+    '            \'x-custom-cookie\': savedCookie,',
     '          },',
     '          body: formData,',
     '        });',
@@ -1455,22 +1494,19 @@ function getHTML() {
     '        // 识别图片',
     '        const recognizeResponse = await fetch(\'/recognize\', {',
     '          method: \'POST\',',
-    '          headers: { \'Content-Type\': \'application/json\' },',
-    '          body: JSON.stringify({ ',
-    '            token: currentToken, ',
-    '            imageId: uploadData.id ',
-    '          }),',
+    '          headers: { ',
+    '            \'Content-Type\': \'application/json\',',
+    '            \'x-custom-cookie\': savedCookie,',
+    '          },',
+    '          body: JSON.stringify({ imageId: uploadData.id }),',
     '        });',
 
     '        const recognizeData = await recognizeResponse.json();',
-
-    '        // 修改这里：使用新的响应格式',
     '        if (!recognizeData.success) {',
     '          throw new Error(recognizeData.error || \'识别失败\');',
     '        }',
 
     '        const result = recognizeData.result || \'识别失败\';',
-    '        // 保存原始文本到属性中，确保 LaTeX 格式完整',
     '        resultDiv.setAttribute(\'data-original-text\', result);',
     '        resultDiv.innerHTML = result;',
     '        waitForMathJax(() => {',
