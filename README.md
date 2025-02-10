@@ -115,26 +115,44 @@ cna=LI8HIAirQyACAWrg3cNOjH8F; _gcl_au=1.1.1200556497.1736728490; xlly_s=1; acw_t
 
 ### 2025/01/13 18点34分 支持`curl`接口调用
 - **支持base64**：
-```
-curl --location 'https://ocr.doublefenzhuan.me/api/recognize/base64' \
---header 'Content-Type: application/json' \
---data '{
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUzZTk0Nzg4LWMwM2QtNDY4Mi05OTNhLWE0ZDNjNGUyZDY0OSIsImV4cCI6MTczOTA3NTE0MX0.FtwG6xDLYd2rngWUhuldg56WXCiLSTL0RI6xJJQ4vHM",
-    "base64Image": "xxx"
-}'
+```bash
+curl -X POST \
+  'https://test-qwen-cor.aughumes8.workers.dev/api/recognize/base64' \
+  -H 'Content-Type: application/json' \
+  -H 'x-custom-cookie: YOUR_COOKIE_STRING' \
+  -d '{
+    "base64Image": "YOUR_BASE64_IMAGE_STRING"
+  }'
 ```
 - 效果图：
 ![image](https://github.com/user-attachments/assets/ef160aae-e741-49d3-96f0-a0969b883f1a)
 
 - **支持图片URL**:
 ```bash
-curl --location 'https://ocr.doublefenzhuan.me/api/recognize/url' \
---header 'Content-Type: application/json' \
---data '{
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUzZTk0Nzg4LWMwM2QtNDY4Mi05OTNhLWE0ZDNjNGUyZDY0OSIsImV4cCI6MTczOTA3NTE0MX0.FtwG6xDLYd2rngWUhuldg56WXCiLSTL0RI6xJJQ4vHM",
-    
-     "imageUrl": "xxxx"
-}'
+curl -X POST \
+  'https://test-qwen-cor.aughumes8.workers.dev/api/recognize/url' \
+  -H 'Content-Type: application/json' \
+  -H 'x-custom-cookie: YOUR_COOKIE_STRING' \
+  -d '{
+    "imageUrl": "YOUR_IMAGE_URL"
+  }'
+```
+- **通过图片文件识别（需要先上传获取imageId）**
+```bash
+# 1. 先上传文件
+curl -X POST \
+  'https://test-qwen-cor.aughumes8.workers.dev/proxy/upload' \
+  -H 'x-custom-cookie: YOUR_COOKIE_STRING' \
+  -F 'file=@/path/to/your/image.jpg'
+
+# 2. 使用返回的imageId进行识别
+curl -X POST \
+  'https://test-qwen-cor.aughumes8.workers.dev/recognize' \
+  -H 'Content-Type: application/json' \
+  -H 'x-custom-cookie: YOUR_COOKIE_STRING' \
+  -d '{
+    "imageId": "RETURNED_IMAGE_ID"
+  }'
 ```
 - 效果图：
 ![image](https://github.com/user-attachments/assets/db0c89f9-96f1-45b1-b1e9-88ac3d01e196)
