@@ -17,7 +17,7 @@ cna=LI8HIAirQyACAWrg3cNOjH8F; _gcl_au=1.1.1200556497.1736728490; xlly_s=1; acw_t
 - **历史记录**：保存每次识别的结果和图片，方便查看。
 - **一键复制**：轻松复制识别结果到剪贴板。
 - **数学公式识别**：特别优化了对数学公式的提取，支持 LaTeX 格式输出。
-- **API 支持**：提供 `curl` 接口调用，支持 base64 和图片 URL 两种方式。
+- **API 支持**：提供 `curl` 接口调用，支持 base64 和图片 URL 两种方式。(Apifox调用文档示例：https://we4q3dzb3r.apifox.cn/)
 - **验证码识别**：新增验证码识别功能，支持常见类型的验证码（如数字、字母、混合字符等），提升自动化处理能力。
 ## 🛠️ 部署指南
 
@@ -57,20 +57,22 @@ cna=LI8HIAirQyACAWrg3cNOjH8F; _gcl_au=1.1.1200556497.1736728490; xlly_s=1; acw_t
 5. **API 调用**：
    - **支持 base64**：
      ```bash
-     curl --location 'https://ocr.doublefenzhuan.me/api/recognize/base64' \
-     --header 'Content-Type: application/json' \
-     --data '{
-         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUzZTk0Nzg4LWMwM2QtNDY4Mi05OTNhLWE0ZDNjNGUyZDY0OSIsImV4cCI6MTczOTA3NTE0MX0.FtwG6xDLYd2rngWUhuldg56WXCiLSTL0RI6xJJQ4vHM",
-         "base64Image": "xxx"
-     }'
+      curl -X POST \
+        'https://test-qwen-cor.aughumes8.workers.dev/api/recognize/base64' \
+        -H 'Content-Type: application/json' \
+        -H 'x-custom-cookie: YOUR_COOKIE_STRING' \
+        -d '{
+          "base64Image": "YOUR_BASE64_IMAGE_STRING"
+        }'
      ```
    - **支持图片 URL**:
      ```bash
-     curl --location 'https://ocr.doublefenzhuan.me/api/recognize/url' \
-     --header 'Content-Type: application/json' \
-     --data '{
-         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUzZTk0Nzg4LWMwM2QtNDY4Mi05OTNhLWE0ZDNjNGUyZDY0OSIsImV4cCI6MTczOTA3NTE0MX0.FtwG6xDLYd2rngWUhuldg56WXCiLSTL0RI6xJJQ4vHM",
-         "imageUrl": "xxxx"
+      curl -X POST \
+        'https://test-qwen-cor.aughumes8.workers.dev/api/recognize/url' \
+        -H 'Content-Type: application/json' \
+        -H 'x-custom-cookie: YOUR_COOKIE_STRING' \
+        -d '{
+          "imageUrl": "YOUR_IMAGE_URL"
      }'
      ```
 6. **验证码识别**
@@ -125,7 +127,7 @@ curl -X POST \
   }'
 ```
 - 效果图：
-![image](https://github.com/user-attachments/assets/ef160aae-e741-49d3-96f0-a0969b883f1a)
+![image](https://github.com/user-attachments/assets/363afb39-444b-4308-a2bd-55831df81b6f)
 
 - **支持图片URL**:
 ```bash
@@ -137,6 +139,9 @@ curl -X POST \
     "imageUrl": "YOUR_IMAGE_URL"
   }'
 ```
+- 效果图：
+![image](https://github.com/user-attachments/assets/a816085e-8a52-4425-b02c-94ea543bf95b)
+
 - **通过图片文件识别（需要先上传获取imageId）**
 ```bash
 # 1. 先上传文件
@@ -154,8 +159,6 @@ curl -X POST \
     "imageId": "RETURNED_IMAGE_ID"
   }'
 ```
-- 效果图：
-![image](https://github.com/user-attachments/assets/db0c89f9-96f1-45b1-b1e9-88ac3d01e196)
 ## Cloudflare访问数据
 ![image](https://github.com/user-attachments/assets/bb456075-6107-47ee-a361-a0edba532c38)
 
