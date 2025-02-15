@@ -252,6 +252,27 @@ async function handleProxyUpload(request) {
 // 通用的识别函数
 async function recognizeImage(token, imageId, request) {
   const cookie = request.headers.get('x-custom-cookie') || '';
+  
+  // 从请求头中获取高级模式状态和自定义prompt
+  const advancedMode = request.headers.get('x-advanced-mode') === 'true';
+  const customPrompt = request.headers.get('x-custom-prompt');
+
+  const defaultPrompt = '请识别图片中的内容，注意以下要求：\n' +
+                    '对于数学公式和普通文本：\n' +
+                    '1. 所有数学公式和数学符号都必须使用标准的LaTeX格式\n' +
+                    '2. 行内公式使用单个$符号包裹，如：$x^2$\n' +
+                    '3. 独立公式块使用两个$$符号包裹，如：$$\\sum_{i=1}^n i^2$$\n' +
+                    '4. 普通文本保持原样，不要使用LaTeX格式\n' +
+                    '5. 保持原文的段落格式和换行\n' +
+                    '6. 明显的换行使用\\n表示\n' +
+                    '7. 确保所有数学符号都被正确包裹在$或$$中\n\n' +
+                    '对于验证码图片：\n' +
+                    '1. 只输出验证码字符，不要加任何额外解释\n' +
+                    '2. 忽略干扰线和噪点\n' +
+                    '3. 注意区分相似字符，如0和O、1和l、2和Z等\n' +
+                    '4. 验证码通常为4-6位字母数字组合\n\n' +
+                    '不要输出任何额外的解释或说明';
+
   const response = await fetch('https://chat.qwenlm.ai/api/chat/completions', {
     method: 'POST',
     headers: {
@@ -271,21 +292,7 @@ async function recognizeImage(token, imageId, request) {
           content: [
             {
               type: 'text',
-              text: '请识别图片中的内容，注意以下要求：\n' +
-                    '对于数学公式和普通文本：\n' +
-                    '1. 所有数学公式和数学符号都必须使用标准的LaTeX格式\n' +
-                    '2. 行内公式使用单个$符号包裹，如：$x^2$\n' +
-                    '3. 独立公式块使用两个$$符号包裹，如：$$\\sum_{i=1}^n i^2$$\n' +
-                    '4. 普通文本保持原样，不要使用LaTeX格式\n' +
-                    '5. 保持原文的段落格式和换行\n' +
-                    '6. 明显的换行使用\\n表示\n' +
-                    '7. 确保所有数学符号都被正确包裹在$或$$中\n\n' +
-                    '对于验证码图片：\n' +
-                    '1. 只输出验证码字符，不要加任何额外解释\n' +
-                    '2. 忽略干扰线和噪点\n' +
-                    '3. 注意区分相似字符，如0和O、1和l、2和Z等\n' +
-                    '4. 验证码通常为4-6位字母数字组合\n\n' +
-                    '不要输出任何额外的解释或说明',
+              text: advancedMode ? customPrompt : defaultPrompt,
               chat_type: "t2t"
             },
             { 
@@ -305,30 +312,33 @@ async function recognizeImage(token, imageId, request) {
   const data = await response.json();
   let result = data.choices[0]?.message?.content || '识别失败';
 
-  // 如果结果长度小于10且只包含字母数字，很可能是验证码
-  if (result.length <= 10 && /^[A-Za-z0-9]+$/.test(result)) {
-    return new Response(JSON.stringify({
-      success: true,
-      result: result.toUpperCase(), // 验证码统一转大写
-      type: 'captcha'
-    }), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
-  }
+  // 只在非高级模式下进行格式化处理
+  if (!advancedMode) {
+    // 如果结果长度小于10且只包含字母数字，很可能是验证码
+    if (result.length <= 10 && /^[A-Za-z0-9]+$/.test(result)) {
+      return new Response(JSON.stringify({
+        success: true,
+        result: result.toUpperCase(),
+        type: 'captcha'
+      }), {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    }
 
-  // 其他情况（数学公式和普通文本）的处理
-  result = result
-    .replace(/\\（/g, '\\(')
-    .replace(/\\）/g, '\\)')
-    .replace(/\n{3,}/g, '\n\n')
-    .replace(/([^\n])\n([^\n])/g, '$1\n$2')
-    .replace(/\$\s+/g, '$')
-    .replace(/\s+\$/g, '$')
-    .replace(/\$\$/g, '$$')
-    .trim();
+    // 其他情况（数学公式和普通文本）的处理
+    result = result
+      .replace(/\\（/g, '\\(')
+      .replace(/\\）/g, '\\)')
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/([^\n])\n([^\n])/g, '$1\n$2')
+      .replace(/\$\s+/g, '$')
+      .replace(/\s+\$/g, '$')
+      .replace(/\$\$/g, '$$')
+      .trim();
+  }
 
   return new Response(JSON.stringify({
     success: true,
@@ -1183,8 +1193,8 @@ function getHTML() {
 // 添加获取cookie按钮样式
 '    .get-cookie-link {',
 '      position: fixed;', 
-'      right: 200px;', // 放在github图标左边
-'      top: 20px;',
+'      left: 150px;', // 放在github图标左边
+'      top: 22px;',
 '      background: #2ecc71;', // 使用不同的颜色区分
 '      color: white;',
 '      border: none;',
@@ -1199,6 +1209,45 @@ function getHTML() {
 
 '    .get-cookie-link:hover {',
 '      background: #27ae60;',
+'    }',
+
+'    .advanced-mode-toggle {',
+'      display: flex;',
+'      align-items: center;',
+'      margin-bottom: 15px;',
+'      padding: 10px;',
+'      background: #f8f9fa;',
+'      border-radius: 8px;',
+'    }',
+
+'    .advanced-mode-toggle input[type="checkbox"] {',
+'      margin-right: 10px;',
+'    }',
+
+'    .prompt-container {',
+'      display: none;', // 默认隐藏
+'      margin-bottom: 15px;',
+'    }',
+
+'    .prompt-container.show {',
+'      display: block;',
+'    }',
+
+'    #promptInput {',
+'      width: 100%;',
+'      padding: 12px;',
+'      border: 2px solid #e9ecef;',
+'      border-radius: 8px;',
+'      font-size: 0.95rem;',
+'      resize: vertical;',
+'      min-height: 120px;',
+'      font-family: monospace;',
+'      line-height: 1.4;',
+'    }',
+
+'    #promptInput:focus {',
+'      outline: none;',
+'      border-color: #3498db;',
 '    }',
     '</style>',
     '</head>',
@@ -1229,6 +1278,14 @@ function getHTML() {
     '</div>',
     // 添加 tokenList 容器
     '<div class="token-list" id="tokenList"></div>', // 添加这一行
+    '<div class="advanced-mode-toggle">',
+    '  <input type="checkbox" id="advancedMode">',
+    '  <label for="advancedMode">高级模式 (自定义Prompt)</label>',
+    '</div>',
+    '<div class="prompt-container" id="promptContainer">',
+    '  <label for="promptInput">自定义Prompt</label>',
+    '  <textarea id="promptInput" placeholder="输入自定义prompt...">请识别图片中的内容，注意以下要求：\n对于数学公式和普通文本：\n1. 所有数学公式和数学符号都必须使用标准的LaTeX格式\n2. 行内公式使用单个$符号包裹，如：$x^2$\n3. 独立公式块使用两个$$符号包裹，如：$$\\sum_{i=1}^n i^2$$\n4. 普通文本保持原样，不要使用LaTeX格式\n5. 保持原文的段落格式和换行\n6. 明显的换行使用\\n表示\n7. 确保所有数学符号都被正确包裹在$或$$中\n\n对于验证码图片：\n1. 只输出验证码字符，不要加任何额外解释\n2. 忽略干扰线和噪点\n3. 注意区分相似字符，如0和O、1和l、2和Z等\n4. 验证码通常为4-6位字母数字组合\n\n不要输出任何额外的解释或说明</textarea>',
+    '</div>',
     '</div>',
 
     '<div class="container">',
@@ -1521,6 +1578,8 @@ function getHTML() {
     '          headers: { ',
     '            \'Content-Type\': \'application/json\',',
     '            \'x-custom-cookie\': savedCookie,',
+    '            \'x-advanced-mode\': advancedMode.checked,  // 添加高级模式状态',
+    '            \'x-custom-prompt\': promptInput.value,     // 添加自定义prompt',
     '          },',
     '          body: JSON.stringify({ imageId: uploadData.id }),',
     '        });',
@@ -1925,6 +1984,32 @@ function getHTML() {
 
     '    // 初始化时调用loadSettings',
     '    loadSettings();',
+
+    '    // 高级模式切换处理',
+    '    const advancedMode = document.getElementById(\'advancedMode\');',
+    '    const promptContainer = document.getElementById(\'promptContainer\');',
+    '    const promptInput = document.getElementById(\'promptInput\');',
+
+    '    advancedMode.addEventListener(\'change\', () => {',
+    '      promptContainer.classList.toggle(\'show\', advancedMode.checked);',
+    '      localStorage.setItem(\'advancedMode\', advancedMode.checked);',
+    '      localStorage.setItem(\'customPrompt\', promptInput.value);',
+    '    });',
+
+    '    // 加载保存的高级模式设置',
+    '    function loadAdvancedSettings() {',
+    '      const savedMode = localStorage.getItem(\'advancedMode\');',
+    '      const savedPrompt = localStorage.getItem(\'customPrompt\');',
+    '      if (savedMode === \'true\') {',
+    '        advancedMode.checked = true;',
+    '        promptContainer.classList.add(\'show\');',
+    '      }',
+    '      if (savedPrompt) {',
+    '        promptInput.value = savedPrompt;',
+    '      }',
+    '    }',
+
+    '    loadAdvancedSettings();',
     '</script>',
     '</body>',
     '</html>'
