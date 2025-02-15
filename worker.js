@@ -255,7 +255,17 @@ async function recognizeImage(token, imageId, request) {
   
   // 从请求头中获取高级模式状态和自定义prompt
   const advancedMode = request.headers.get('x-advanced-mode') === 'true';
-  const customPrompt = request.headers.get('x-custom-prompt');
+  
+  // 解码自定义prompt
+  let customPrompt = '';
+  try {
+    const encodedPrompt = request.headers.get('x-custom-prompt');
+    if (encodedPrompt) {
+      customPrompt = decodeURIComponent(atob(encodedPrompt));
+    }
+  } catch (error) {
+    console.error('Prompt解码错误:', error);
+  }
 
   const defaultPrompt = '请识别图片中的内容，注意以下要求：\n' +
                     '对于数学公式和普通文本：\n' +
@@ -1579,7 +1589,7 @@ function getHTML() {
     '            \'Content-Type\': \'application/json\',',
     '            \'x-custom-cookie\': savedCookie,',
     '            \'x-advanced-mode\': advancedMode.checked,  // 添加高级模式状态',
-    '            \'x-custom-prompt\': promptInput.value,     // 添加自定义prompt',
+    '            \'x-custom-prompt\': btoa(encodeURIComponent(promptInput.value)), // Base64编码',
     '          },',
     '          body: JSON.stringify({ imageId: uploadData.id }),',
     '        });',
