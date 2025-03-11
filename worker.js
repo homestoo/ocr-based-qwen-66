@@ -295,7 +295,7 @@ async function recognizeImage(token, imageId, request) {
     body: JSON.stringify({
       stream: false,
       chat_type: "t2t",
-      model: 'qwen2.5-vl-72b-instruct',
+      model: 'qwen-max-latest',
       messages: [
         {
           role: 'user',
