@@ -4,7 +4,7 @@
 #               QwenLM OCR 
 
 
-本项目基于 [QwenLM](https://chat.qwenlm.ai/) 。通过调用 QwenLM 的 API，你可以从图片中提取文字内容，并且该项目支持一键部署到 **Cloudflare Workers** (CF) 上。
+本项目基于 [QwenLM](https://chat.qwenlm.ai/) 。通过调用 QwenLM 的 ”API“，你可以从图片中提取文字内容，并且该项目支持一键部署到 **Cloudflare Workers** (CF) 上。
 
 ## 项目展示
 ![image](https://github.com/user-attachments/assets/9e794686-f914-4fb7-9931-1ada7c22bb2d)
