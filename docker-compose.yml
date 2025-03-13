@@ -1,0 +1,16 @@
+version: '3'
+services:
+  ocr-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: ocr-qwen-vl
+    container_name: ocr-qwen-vl
+    ports:
+      - "8787:8787"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped 
