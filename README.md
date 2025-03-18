@@ -180,6 +180,8 @@ curl -X POST \
 ```
 ## Cloudflare访问数据
 ![image](https://github.com/user-attachments/assets/bb456075-6107-47ee-a361-a0edba532c38)
+## 致谢
+![image](https://github.com/user-attachments/assets/06e66de2-773a-4477-976c-0185b248efc0)
 
 ## 趋势
 [![Star History Chart](https://api.star-history.com/svg?repos=cunninger/ocr-based-qwen&type=Date)](https://star-history.com/#Cunninger/ocr-based-qwen&Date)
