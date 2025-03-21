@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/4a0466d9-a344-43ba-ad9d-d550a497e8e4)<div align="center"> <img src="https://github.com/Cunninger/ocr-based-qwen/blob/main/ocr.png?raw=true" width="120"> </div>
+<div align="center"> <img src="https://github.com/Cunninger/ocr-based-qwen/blob/main/ocr.png?raw=true" width="120"> </div>
 
 
 #               QwenLM OCR 
