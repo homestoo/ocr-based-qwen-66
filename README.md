@@ -39,6 +39,8 @@ acw_tc=c2db8f77aa0023a996777b8537356b308a98c7fb128b3020323ddd0d440fee2e; x-ap=ap
 - **API 支持**：提供 `curl` 接口调用，支持通过图片文件、base64 和图片 URL 3种方式。(Apifox调用文档示例(**仅作为代码示例，这个网页调试有问题**)：https://0vkh6v4ad8.apifox.cn/)
 - **验证码识别**：新增验证码识别功能，支持常见类型的验证码（如数字、字母、混合字符等），提升自动化处理能力。
 - **自定义prompt**: 在高级模式下(v1.1.0支持)，用户可以自定义 prompt，跳过格式化处理，直接返回原始结果，而在普通模式下，使用默认的 prompt 并保持现有的格式化处理逻辑。
+## qwen模型接口：
+https://chat.qwenlm.ai/api/models
 ## 提示词工程
 ```
   const defaultPrompt =
