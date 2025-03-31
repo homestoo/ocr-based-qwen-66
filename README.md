@@ -7,7 +7,8 @@
 本项目基于 [QwenLM](https://chat.qwenlm.ai/) 。通过调用 QwenLM 的 ”API“，你可以从图片中提取文字内容，并且该项目支持一键部署到 **Cloudflare Workers** (CF) 上。
 
 ## 项目展示
-![image](https://github.com/user-attachments/assets/979fc3d3-c1a5-48b9-9cba-a0335bb5978e)
+![screely-1743379867339](https://github.com/user-attachments/assets/ad25719c-0504-4bc1-926f-4bffeb6b745d)
+
 
 ## 测试cookie
 - 如果出现**处理失败: 文件上传失败的错误**，说明测试Cookie 上传文件过多, 尝试获取自己账号的Cookie 使用
