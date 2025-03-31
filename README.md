@@ -73,7 +73,17 @@ https://chat.qwenlm.ai/api/models
 2. **部署**：
    - 保存并部署 Worker。
    - 获取 Worker 的访问地址，即可使用。
-
+### 2. Docker 一键部署
+1. 使用以下命令拉取并运行Docker镜像。
+```
+docker pull sexgirls/qwen-ocr-app:latest
+docker run -p 3000:3000 sexgirls/qwen-ocr-app:latest
+```
+2. 然后在浏览器中访问应用：
+```
+http://localhost:3000
+```
+详情可见：https://github.com/Cunninger/ocr-based-qwen/tree/docker-version
 ## 🧩 使用说明
 
 1. **设置 Cookie**：
