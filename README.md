@@ -7,7 +7,9 @@
 本项目基于 [QwenLM](https://chat.qwenlm.ai/) 。通过调用 QwenLM 的 ”API“，你可以从图片中提取文字内容，并且该项目支持一键部署到 **Cloudflare Workers** (CF) 上。
 
 ## 项目展示
-![image](https://github.com/user-attachments/assets/9e794686-f914-4fb7-9931-1ada7c22bb2d)
+![screely-1743379867339](https://github.com/user-attachments/assets/ad25719c-0504-4bc1-926f-4bffeb6b745d)
+
+
 ## 测试cookie
 - 如果出现**处理失败: 文件上传失败的错误**，说明测试Cookie 上传文件过多, 尝试获取自己账号的Cookie 使用
 ```
@@ -20,11 +22,11 @@
 ![image](https://github.com/user-attachments/assets/5251feec-3fdc-4003-82b5-a273a3abb9f2)
 - cookie1:
 ```txt
-cna=LI8HIAirQyACAWrg3cNOjH8F; _gcl_au=1.1.1200556497.1736728490; xlly_s=1; acw_tc=c2b96feb4d2929a1649ea96dc00590956477696933f61783d23e6c95429ecf74; x-ap=ap-southeast-1; token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUzZTk0Nzg4LWMwM2QtNDY4Mi05OTNhLWE0ZDNjNGUyZDY0OSIsImV4cCI6MTc0MTE0ODM0MX0.-2hF4l1iJf8r5U6UzoXyc-TFqx0i5luWmtJk0kk8T5o; ssxmod_itna=Yq+hqIxjx=AKi7eitD8IDCWBfbxxl4BtGRDeq7tDRDFqApxDHmLWxoDUxxu2hE80DD0ADnG3BUxGN4tDxiNDAg40iDC4mL37ezTxthtQQhgDCTYCu2rpTCGGE7P3rnTE0M25BA6w3KxxGLDY=DCqhxl4eD4R3Dt4DIDAYDDxDWFeGIDGYD7hb=ymbDm44aYxGy3nbDA3TDbhb5xitYDDUAKeG2igbhDDNheFY49GG7yC0OorHDAqh==GbDjqPD/RxLP+bkXtkh/CTA=BapCeaWxBQD7we3xYE4c=IdqZawfiEwDELx0De/iGKGxdYmPlvzYKGlpVGGoWDqjqQlXnlvnnPDDc=Y9=buiDrP3KYtvS85lmHQDxPoGb0rz0THimDgri0i8B0=nxNCDtYDb30eDBeIG4/g8BvDD; ssxmod_itna2=Yq+hqIxjx=AKi7eitD8IDCWBfbxxl4BtGRDeq7tDRDFqApxDHmLWxoDUxxu2hE80DD0ADnG3BDxDfk7K7e5xDLiARWCTe9A4D/9o1+WeqlSGSWe4dTPhBUq4kzjyE41MPvWM=BtDwWHWiQ4B+GVChGZYlDDoA6gCj2VGnQeqqxeBSiqeT69Cg2Q6qrEGqv/DTQR8MRo3m3E7Gd7mf42Re2lYpNic=beSRp3tCDgWT7khOXGqf2lBpre5BtExlRw6cUwWwDxNSFUl/8Un/RGZz8/jLk2t1XZC79Eb7iRTPTMPn5MTHW2fs1DlsH0z9RxCLW1Rdb2QFhd9biugr+2aTW1oeYAbtORQNMW43+m2Gcb=TuFtQGqhiTqrNfdwSOe8WHSWTr7cRaw833Yzw31d4iN+Q9OO7izUj1uSdYrh4dIvx5CwYD45Vji4EbkiaNQQGbt1hDa8Ymmda3r3lThChY8Nm2IscznS+mS43izuLzUYN94syC3tQi03=u3Q6az931moHSOLY3OFPKoMjqMUDbtebxw=rT2rBAv08uRkWHzFtGp2lUSSb3z41pTZcx/8NB3jD+XnIpLFEw8bv4r58wRLLwubFTQ9cPDv+9k36tvoCYXlso4qGA44E3y737YNBDmUct2Iahxq76iTrlGotG1NBBN=Tx4hkA2Zp887gfc4Tp8V1wGCf49XeA=0Xu3uIKqYQADh0ABmqlQ4w=YVlDPjO9KH2xaG3C8ID5DeY41AxMxR2NIGhSD+5q0UQGx0Ue4dAi0DwbY+f7n1Gwz014LQ2DY+42xI2zG5TmhfDtXehC40aWxfDi0xIGNQ3gGkYeu2fAfADwY31mkAooDxD; SERVERID=da7472215188c88fe194f138f1242089|1738557149|1738556339; SERVERCORSID=da7472215188c88fe194f138f1242089|1738557149|1738556339; isg=BBcXHLltPM7zv7hi-FnT0HW6pothXOu-LIccEmlG4eZGmDrabS7mDq_--ziGPsM2; tfstk=gxYniE986HSQfEpYpd7Icypow5otjW_5cLUReaBrbOW6JLnCehbygKjRyBdPr4XN8gtde9BlrQ9m6x3xkBOCPgkxHqIXCrTVlurzY8QNb_blTz_06LRCPaktd3lv5B9qU3M64alG7_fz8aWFTPlGZsXPz9SzQl5VQT7yU9SaQ617YJzUzRlGNOWPzaJP7jQ8r9CV1FkgVOPK4CrD_6jh3BWH9KLadGrBiO4zzFjfxtuAIzzyS6Ot3kbuo0B2c9IACduT-aANZKfDKRkGzCYBoG8ECzvDIn7G1hMuqtxy9ntPjXueswXhmFI0Zk7H4pTlAHVSGC7eCn6fYcM1seLAqtsgQvR9s9SDqpH_z9KD_djvWRUA7I-GSgozbo5IVz1ZwFr7VM51stK4FEPS3FZLvfcg0MIF16r-sfq7VM51sthisoJlY11U2
+cna=pklJII7LlmACAWrjg1e7Aw5T; _bl_uid=vjmdq8ej4XLdptzy8g22cbqap10w; _gcl_au=1.1.2061498123.1740790694.1095090244.1742178801.1742178800; visitor_id=69d9708501480ef09203b791ac6bf725; x-ap=ap-southeast-1; xlly_s=1; acw_tc=0a03e53417425630262545566e597ceb582665688952129fe15ad53c13a1f9; ssxmod_itna=eq0xcD9DgDnDRQGG0K3qq7K7KqKqeTx0dGMD3Mq7tDRDFqAP5DHIOFP5DUgork7Dhx=80hqDsqQY4GzDiMPGhDBmAHQYDDKCYRhc0NPY1mT2DC1uhedHmd4N7ArjRr9ZZSrtexB3DEx0==nTirDYYEDBYD74G+DDeDir3Dj4GmDGA3deDFCmbQcnre=xDwDB=DmqG2Q2rDm4DfDDd5O7=jCWroDDtDAun1PPDADAfY24Dl08OjCGDK24GWClR/iceaMawdV2rDjdPD/RG021H2o5LtXCMs+9Ye=cWDtqD986RVWaIYVQu4wIYCDqQRDPhFCIYQDblxx8DFnD47DtGA4YiiGGbjaHCGKR+63+FQwFe9x=EF7Dh+5ZUvwRy/exxfRDAuCjEYeeCtGqCIOlgtCiN/riQGQ=G4WGeuricqFeD; ssxmod_itna2=eq0xcD9DgDnDRQGG0K3qq7K7KqKqeTx0dGMD3Mq7tDRDFqAP5DHIOFP5DUgork7Dhx=80o4DW+DDwYpQkUCgDCMCnMHiqezU=ED; SERVERID=7f8d8d352ef7abbfd818d506cbe1b627|1742563117|1742563026; token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUzZTk0Nzg4LWMwM2QtNDY4Mi05OTNhLWE0ZDNjNGUyZDY0OSIsImV4cCI6MTc0NTE1NTExN30.4g_Jz3Gv_OmBRMSJVoy641H9iCG90v39SK18wu9mCFQ; tfstk=ga7qs-x4urU2V1_4IQYZ4vDR3xTvJE2I0N96s1fMGKv0HNTwsL5Zhi11sFzwEExOcd9XQF5OL7wQRy1AMFpgdJaCSmqqdFpg5FqWr_hjUk2QRy1cFK8BDJ_jwASyHCYMihAmq7R6tFADndVyECRKjxXMS7PysCHMid0Mr3ApEdYMSOfuaCMKRtBtdBx0_VcIk0DvMnJhiLuNMaRD0mCDUV0Gzt-2K29rSVbyM_MBBrgUfpjphHtPEzg27_ANhL63-48kYMC6_tzqoEsl2ZLfPJlp0OJyxatzrYRPz6sHw_rUa_7w3HbD4fgXoERGIhS8L2O2lg-FuiFtEsXB3MYA1XyfaHSyvQxo_mYfA6_9xZ4qpLtp_t95Ky0yrhjzLAdugA_O0AmwmQdyd7Pr8_lRpTUzeHmtX3xHapNvjcn9mQdyd7PrXcKx-QJQMhf..; isg=BA0NXKJIVjFc4PIC5ORdQdZ0HCmH6kG8OYRCyE-SSaQTRi34FzpRjFvAstogsll0
 ```
 - cookie2:
-```
-cna=t0cuICXhrXkCAXWl6GzHkMUp; xlly_s=1; x-ap=cn-hongkong; acw_tc=a73003c9b042d0d3f532bdfcfa76d91d8ca97fed4f814bfe19a536976a6ad535; _gcl_au=1.1.242039612.1739020740.1704894607.1739629676.1739629684; token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImY2MThlY2IzLThmMGEtNGYwZS1hNTJjLTNkMDg1ZmZiZTg3YSIsImV4cCI6MTc0MjIyMTcwMX0.AtPidW3D-bS5g9PjGwnW95AdtxhwSFTu9KtSAJgruyk; SERVERID=c1788c54f08a42ee73d0a776f745df8f|1739629716|1739628920; SERVERCORSID=c1788c54f08a42ee73d0a776f745df8f|1739629716|1739628920; ssxmod_itna=CqIx2DRD9D00i=Ki7KitD8DpZD+EmH3qDzxCHK50CDmxjKidYDUQs6t8WWEGjVGnw0Yee7GqDsKzQ4GzDiMPGhDBnAHHDGwrq+G70bbeqf7DyDKqbRiWbPafCj4SwQAvlQCqLLGMRYDHxi8DBKxYQ+hwDiiTx0rD0eDPxDYDG++DneDexDdTIEIT4GWbjbKDl9Ga4Da74i3TfGz78oqDGvqt0cPr4LIx4GCOD07Di5x8/cmD7H3Dlcqtu0mDDyuruGv8+lHUzWwvz3DvxDkOQoDo=B0R7oAUtnP5hGsKhDFwlib5GPKQiG4luNSxHehsQ0Pz0Di0qYiYtWOGBYQ4DG45QAQsOYKg4COeGkCId1LTKwDsSgYEEtLerY0DeDdqedOlGSG5a7Dg7DwosXoGdl5TWDD; ssxmod_itna2=CqIx2DRD9D00i=Ki7KitD8DpZD+EmH3qDzxCHK50CDmxjKidYDUQs6t8WWEGjVGnw0Yee7Q4DWwYA7eDCUWx03h8K6YwdqD0HjAYj/GLxqFv+iQOKGPTYf84vsOBbWgFO0p0GSnoChd4mZbse0F1mEHz58csRE9k2h0wFPHa1ri71E9C3DAHFcWP8c9k1/p8+Q8WmcW7Z2AF3BIaPtgPKmgHmP+vf1rCR/9FqUfHPeMWFOGFuPaa7fczZ6pWRzGFaOiEQHl6PbfR7HCrwbyHmsravXausZ0TQVpCs1LFYiydP1vZFzrsddNu=GtZ4OrQV0648ptEIlPpxYfHlGPrt+cPA0Pq9I3tISQ2ePw9l4EWrBW5b+vlhXZC6lP0P3IZ7vF92dpbdhAWb5saY=Pp3jpoSiREDh/NIEGGxTqnfO=GGtL50UPxr6QEWO5RA6zbvC+IRW2n=UhPASiX3jjKfa6oIOhG5mdy+a0rGzIIEQQx1Uun0uI2qhApPql1D82pyavpDTo9y=IoxcIMhvM/D48W7o5El+vcAPW5LP5q7iOPA8ZEL1cKoYePEP1hz3Rupb625LiFg2OnniSBNYYKiX7OhbLKpNbizq3UEcK0jozUXZPLh5T/rb7h3WxCiKYfKenmXn3IhfIBdzl0CYftfDRNPuNIuiMx0DSpn+LGnXZgyzOce9=zOP4jnD2Qm2SxG+0Wne+yqENNDqGYL5xRGfhqU10v8Ysmm4Aa7HhnrwhzDKke8E1N0PGPFaejQurxAGiiSm+QGA0DAKC7azva2dnYziwlPglGii8=K3AP0tOhaZeVr40HP0mce=2Yl8wGr7euxtAqlDipqNa9ODqxT7xsgYQD4D; tfstk=gwNi5kVuMRk6tUZJXkl1efQ-Tq6KWFGj-odxDjnVLDoQ6oBsDJc4zuDxMPUqismUccRVCZgm8o0Y6AWfCmmEv4y9_OaZi2ubcAPxbdREiqqR5KW1fKY_tuAv6G6_uIcxggIRw_U_-jGV2hk6Vx-szq9VMcJw8fgxC0mhq_U_5eyQu-41wn4PVTUq0okZLvu-YVRZ0okU8qme_qRZuH7nlDlq7AoZY6uSumJq0ozF-qiE0jkZOwpjqlZ8TMkj2Kasx-NnSAmz-TOyZdg620aZxIRqKVDGkPoHgIPQpwUh-cWWJmGtfzggc_Os_x2aj2lciBlgfPPqKSIdwA4ruxFiK6ju-SmiU5kHoQag8qrqnJskwVcTKYVgCZtU7ungUfavrGUnEJDS8v8DQfe8ySMz_1xSvYg0q4qMjgSDLL70tIgFkWJXhAuI-0KsuB_i9CSt5wbHF6kZRV1h-wvXhAuI-0Qh-LJEQ2g1t; isg=BFdXbuJ5_B5RNniFwH3oA0uX5suhnCv-U6tDJKmFZCaN2HQatW5bT5v2OnhGBAN2
+```txt
+acw_tc=c2db8f77aa0023a996777b8537356b308a98c7fb128b3020323ddd0d440fee2e; x-ap=ap-southeast-1; _gcl_au=1.1.485014960.1742563291; cna=2lVkIP9JX0cCAWrgu3Se+w7K; _bl_uid=L2mdt8wtidFtCg6hOwepuqdbswp9; xlly_s=1; ssxmod_itna=eqfx9DRDgDuCq4e9irD+x0xiIt4Kk0q0dGMD3u47t=GcD8xx0POD8ne5DUhKgGg5hxPY0hqDsPexiNDAg40iDCbmd87DDqtqgUb7DPmYRE7DtUgiz1dRuKOGrh2LROs=/Dc3eOieGLDmKDU2Dre34DxPPD5xDTDWeDGDD3rxGaDmeDe1ghD04mFfovifAoD7eDXxGCz74mDYPDWxDFibw8HxowrDDCDi5flb3DixiaTzPDB1PuHhDKtzPDEDOIVEfozBdqO/PmD7H3DlPx+vdXwH/asIoyso6r3+3fDCKDjgSpxSrQTKSI5b8+Dxn0YeWeOgO+GDYhxqDty+xKGKBB3Qix70DeDxoxxQGKgGw9xqQAYOEQOO7YCpOhKKbzcqsibslTe7G3qGtuOv+GiqB=klOpOAMA5KB5e35K+D3ixTQmkeh4D; ssxmod_itna2=eqfx9DRDgDuCq4e9irD+x0xiIt4Kk0q0dGMD3u47t=GcD8xx0POD8ne5DUhKgGg5hxPY0o4DW+DDwYpQkUCgDCMSOB5qeg0/mkbxD; token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5MWIwY2ExLTlhZmMtNDkwNi05MTQ4LWNlN2M4ZjZhN2NmYyIsImV4cCI6MTc0NTE1NTMzM30.jqUN03CY_bB6GniWCn6ISQkdnpN59hm3Gug655Dd2GI; SERVERID=4c8b4dba95825d8ac7605fad188b7907|1742563334|1742563289; tfstk=gw6qcdO43-eqJr64S3vZa2mpW7vvhK4QnOT6jGjMcEY0kO9wjUSZlss1jdywrNLchdDirF7wXqADIjvZQUth1qDcmC8kjNO0DnVvQbx6fxcMISLZDT7ECxaYMGDwCd4QRJwCDgJ9Iy_g58eDkhIkSuO0iuwfud4QR8tK5z0vIZNRCkiPqUKwjjDcS3mkyhkisNYDZ4xevdYGSN0lqntsiAcDSYqyXUYMIdbMEvFVkN3BxIqZIcF3PztMgejDzASAUnAqMiYrIAXPuI8ndUkiIT-VVmR-AvP6-6LXOQ7uFxJNqh7XPw2nULAF9GtNu-kDh_fRHK678DdV7URhFQyoz3WPA6xR4WrP4O82ttArfx9D3hbM__UEdnJfaBWVMl3lmwTVtKIsYrsyT_RpqQmZiK1CAOdhn-upPBKNlU_3KYJksgkKW3qq5OCqSfRD238Q4u7onRcc_mCrKfh9ZBxyRodi6fdD238Q4ult6IHH4eZvs; isg=BLGxZSYScp1XxN6JZK3ED2FvwD1LniUQRPVRw5PFbniWutAM2e5m4VbM3k7cRr1I
 ```
 ## 🚀 功能特性
 
@@ -38,6 +40,27 @@ cna=t0cuICXhrXkCAXWl6GzHkMUp; xlly_s=1; x-ap=cn-hongkong; acw_tc=a73003c9b042d0d
 - **API 支持**：提供 `curl` 接口调用，支持通过图片文件、base64 和图片 URL 3种方式。(Apifox调用文档示例(**仅作为代码示例，这个网页调试有问题**)：https://0vkh6v4ad8.apifox.cn/)
 - **验证码识别**：新增验证码识别功能，支持常见类型的验证码（如数字、字母、混合字符等），提升自动化处理能力。
 - **自定义prompt**: 在高级模式下(v1.1.0支持)，用户可以自定义 prompt，跳过格式化处理，直接返回原始结果，而在普通模式下，使用默认的 prompt 并保持现有的格式化处理逻辑。
+## qwen模型接口：
+https://chat.qwenlm.ai/api/models
+## 提示词工程
+```
+  const defaultPrompt =
+    '不要输出任何额外的解释或说明,禁止输出例如：识别内容、以上内容已严格按照要求进行格式化和转换等相关无意义的文字！' + '请识别图片中的内容，注意以下要求：\n' +
+    '对于数学公式和普通文本：\n' +
+    '1. 所有数学公式和数学符号都必须使用标准的LaTeX格式\n' +
+    '2. 行内公式使用单个$符号包裹，如：$x^2$\n' +
+    '3. 独立公式块使用两个$$符号包裹，如：$$\\sum_{i=1}^n i^2$$\n' +
+    '4. 普通文本保持原样，不要使用LaTeX格式\n' +
+    '5. 保持原文的段落格式和换行\n' +
+    '6. 明显的换行使用\\n表示\n' +
+    '7. 确保所有数学符号都被正确包裹在$或$$中\n\n' +
+    '对于验证码图片：\n' +
+    '1. 只输出验证码字符，不要加任何额外解释\n' +
+    '2. 忽略干扰线和噪点\n' +
+    '3. 注意区分相似字符，如0和O、1和l、2和Z等\n' +
+    '4. 验证码通常为4-6位字母数字组合\n\n' +
+    '';
+```
 ## 🛠️ 部署指南
 
 ### 1. 部署到 Cloudflare Workers
@@ -50,7 +73,17 @@ cna=t0cuICXhrXkCAXWl6GzHkMUp; xlly_s=1; x-ap=cn-hongkong; acw_tc=a73003c9b042d0d
 2. **部署**：
    - 保存并部署 Worker。
    - 获取 Worker 的访问地址，即可使用。
-
+### 2. Docker 一键部署
+1. 使用以下命令拉取并运行Docker镜像。
+```
+docker pull sexgirls/qwen-ocr-app:latest
+docker run -p 3000:3000 sexgirls/qwen-ocr-app:latest
+```
+2. 然后在浏览器中访问应用：
+```
+http://localhost:3000
+```
+详情可见：https://github.com/Cunninger/ocr-based-qwen/tree/docker-version
 ## 🧩 使用说明
 
 1. **设置 Cookie**：
@@ -180,6 +213,7 @@ curl -X POST \
 ```
 ## Cloudflare访问数据
 ![image](https://github.com/user-attachments/assets/bb456075-6107-47ee-a361-a0edba532c38)
-
+## 致谢
+![image](https://github.com/user-attachments/assets/cfc04290-6400-483d-b0a9-4dd4b409bab9)
 ## 趋势
 [![Star History Chart](https://api.star-history.com/svg?repos=cunninger/ocr-based-qwen&type=Date)](https://star-history.com/#Cunninger/ocr-based-qwen&Date)

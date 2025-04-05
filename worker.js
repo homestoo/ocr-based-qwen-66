@@ -213,11 +213,11 @@ async function handleProxyUpload(request) {
   try {
     const formData = await request.formData();
     const cookie = request.headers.get('x-custom-cookie') || '';
-    
+
     // 从cookie中提取token
     const tokenMatch = cookie.match(/token=([^;]+)/);
     const token = tokenMatch ? tokenMatch[1] : '';
-    
+
     const response = await fetch('https://chat.qwenlm.ai/api/v1/files/', {
       method: 'POST',
       headers: {
@@ -229,7 +229,7 @@ async function handleProxyUpload(request) {
     });
 
     const data = await response.json();
-    
+
     return new Response(JSON.stringify(data), {
       headers: {
         'Content-Type': 'application/json',
@@ -252,10 +252,10 @@ async function handleProxyUpload(request) {
 // 通用的识别函数
 async function recognizeImage(token, imageId, request) {
   const cookie = request.headers.get('x-custom-cookie') || '';
-  
+
   // 从请求头中获取高级模式状态和自定义prompt
   const advancedMode = request.headers.get('x-advanced-mode') === 'true';
-  
+
   // 解码自定义prompt
   let customPrompt = '';
   try {
@@ -267,27 +267,27 @@ async function recognizeImage(token, imageId, request) {
     console.error('Prompt解码错误:', error);
   }
 
-  const defaultPrompt = '请识别图片中的内容，注意以下要求：\n' +
-                    '对于数学公式和普通文本：\n' +
-                    '1. 所有数学公式和数学符号都必须使用标准的LaTeX格式\n' +
-                    '2. 行内公式使用单个$符号包裹，如：$x^2$\n' +
-                    '3. 独立公式块使用两个$$符号包裹，如：$$\\sum_{i=1}^n i^2$$\n' +
-                    '4. 普通文本保持原样，不要使用LaTeX格式\n' +
-                    '5. 保持原文的段落格式和换行\n' +
-                    '6. 明显的换行使用\\n表示\n' +
-                    '7. 确保所有数学符号都被正确包裹在$或$$中\n\n' +
-                    '对于验证码图片：\n' +
-                    '1. 只输出验证码字符，不要加任何额外解释\n' +
-                    '2. 忽略干扰线和噪点\n' +
-                    '3. 注意区分相似字符，如0和O、1和l、2和Z等\n' +
-                    '4. 验证码通常为4-6位字母数字组合\n\n' +
-                    '不要输出任何额外的解释或说明';
-
+  const defaultPrompt =
+    '不要输出任何额外的解释或说明,禁止输出例如：识别内容、以上内容已严格按照要求进行格式化和转换等相关无意义的文字！' + '请识别图片中的内容，注意以下要求：\n' +
+    '对于数学公式和普通文本：\n' +
+    '1. 所有数学公式和数学符号都必须使用标准的LaTeX格式\n' +
+    '2. 行内公式使用单个$符号包裹，如：$x^2$\n' +
+    '3. 独立公式块使用两个$$符号包裹，如：$$\\sum_{i=1}^n i^2$$\n' +
+    '4. 普通文本保持原样，不要使用LaTeX格式\n' +
+    '5. 保持原文的段落格式和换行\n' +
+    '6. 明显的换行使用\\n表示\n' +
+    '7. 确保所有数学符号都被正确包裹在$或$$中\n\n' +
+    '对于验证码图片：\n' +
+    '1. 只输出验证码字符，不要加任何额外解释\n' +
+    '2. 忽略干扰线和噪点\n' +
+    '3. 注意区分相似字符，如0和O、1和l、2和Z等\n' +
+    '4. 验证码通常为4-6位字母数字组合\n\n' +
+    '';
   const response = await fetch('https://chat.qwenlm.ai/api/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'User-Agent': 'PostmanRuntime/7.43.0', 
+      'User-Agent': 'PostmanRuntime/7.43.0',
       'accept': '*/*',
       'authorization': `Bearer ${token}`,
       'cookie': cookie,
@@ -305,8 +305,8 @@ async function recognizeImage(token, imageId, request) {
               text: advancedMode ? customPrompt : defaultPrompt,
               chat_type: "t2t"
             },
-            { 
-              type: 'image', 
+            {
+              type: 'image',
               image: imageId,
               chat_type: "t2t"
             },
@@ -1070,195 +1070,209 @@ function getHTML() {
     '      background: rgba(255, 255, 255, 0.9);',
     '      backdrop-filter: blur(5px);',
     '      z-index: 900;',
-    ' display: flex;',           
-    '      justify-content: center;', 
-    '      align-items: center;',     
+    ' display: flex;',
+    '      justify-content: center;',
+    '      align-items: center;',
     '    }',
-'    .footer-content {',
-'      text-align: center;',      
-'      width: 100%;',
-'    }',
+    '    .footer-content {',
+    '      text-align: center;',
+    '      width: 100%;',
+    '    }',
     '    .powered-by {',
-'      color: #7f8c8d;',
-'      font-size: 0.9rem;',
-'    }',
+    '      color: #7f8c8d;',
+    '      font-size: 0.9rem;',
+    '    }',
 
-'    .powered-by a {',
-'      color: #3498db;',
-'      text-decoration: none;',
-'      transition: color 0.3s ease;',
-'      font-weight: 500;',
-'    }',
+    '    .powered-by a {',
+    '      color: #3498db;',
+    '      text-decoration: none;',
+    '      transition: color 0.3s ease;',
+    '      font-weight: 500;',
+    '    }',
 
-'    .powered-by a:hover {',
-'      color: #2980b9;',
-'    }',
+    '    .powered-by a:hover {',
+    '      color: #2980b9;',
+    '    }',
 
-'    .powered-by {',
-'      color: #7f8c8d;',
-'      font-size: 0.9rem;',
-'    }',
+    '    .powered-by {',
+    '      color: #7f8c8d;',
+    '      font-size: 0.9rem;',
+    '    }',
 
-'    .powered-by a {',
-'      color: #3498db;',
-'      text-decoration: none;',
-'      transition: color 0.3s ease;',
-'      font-weight: 500;',
-'    }',
+    '    .powered-by a {',
+    '      color: #3498db;',
+    '      text-decoration: none;',
+    '      transition: color 0.3s ease;',
+    '      font-weight: 500;',
+    '    }',
 
-'    .powered-by a:hover {',
-'      color: #2980b9;',
-'    }',
+    '    .powered-by a:hover {',
+    '      color: #2980b9;',
+    '    }',
 
-'    /* 输入控件组样式 */',
-'    .input-controls {',
-'      margin-top: 15px;',
-'      width: 100%;',
-'    }',
+    '    /* 输入控件组样式 */',
+    '    .input-controls {',
+    '      margin-top: 15px;',
+    '      width: 100%;',
+    '    }',
 
-'    .button-group {',
-'      display: flex;',
-'      gap: 10px;',
-'      margin-top: 10px;',
-'      justify-content: center;',
-'    }',
+    '    .button-group {',
+    '      display: flex;',
+    '      gap: 10px;',
+    '      margin-top: 10px;',
+    '      justify-content: center;',
+    '    }',
 
-'    #urlInput {',
-'      width: 100%;',
-'      padding: 10px;',
-'      border: 1px solid #dcdde1;',
-'      border-radius: 8px;',
-'      resize: none;',
-'      font-size: 14px;',
-'    }',
+    '    #urlInput {',
+    '      width: 100%;',
+    '      padding: 10px;',
+    '      border: 1px solid #dcdde1;',
+    '      border-radius: 8px;',
+    '      resize: none;',
+    '      font-size: 14px;',
+    '    }',
 
-'    .github-link {',
-'      position: fixed;',
-'      right: 150px;',
-'      top: 20px;',
-'      background: #333;',
-'      color: white;',
-'      border: none;',
-'      padding: 10px;',
-'      border-radius: 50%;',
-'      cursor: pointer;',
-'      z-index: 1001;',
-'      width: 40px;',
-'      height: 40px;',
-'      display: flex;',
-'      align-items: center;',
-'      justify-content: center;',
-'      transition: background 0.3s ease;',
-'    }',
+    '    .github-link {',
+    '      position: fixed;',
+    '      right: 150px;',
+    '      top: 20px;',
+    '      background: #333;',
+    '      color: white;',
+    '      border: none;',
+    '      padding: 10px;',
+    '      border-radius: 50%;',
+    '      cursor: pointer;',
+    '      z-index: 1001;',
+    '      width: 40px;',
+    '      height: 40px;',
+    '      display: flex;',
+    '      align-items: center;',
+    '      justify-content: center;',
+    '      transition: background 0.3s ease;',
+    '    }',
 
-'    .github-link:hover {',
-'      background: #24292e;',
-'    }',
+    '    .github-link:hover {',
+    '      background: #24292e;',
+    '    }',
 
-'    .github-icon {',
-'      width: 24px;',
-'      height: 24px;',
-'    }',
+    '    .github-icon {',
+    '      width: 24px;',
+    '      height: 24px;',
+    '    }',
 
-'    .cookie-input-container {',
-'      margin-bottom: 15px;',
-'    }',
+    '    .cookie-input-container {',
+    '      margin-bottom: 15px;',
+    '    }',
 
-'    #cookieInput {',
-'      width: 100%;',
-'      padding: 12px;',
-'      border: 2px solid #e9ecef;',
-'      border-radius: 8px;',
-'      font-size: 0.95rem;',
-'      resize: vertical;',
-'      min-height: 120px;',
-'      font-family: monospace;',
-'      line-height: 1.4;',
-'    }',
+    '    #cookieInput {',
+    '      width: 100%;',
+    '      padding: 12px;',
+    '      border: 2px solid #e9ecef;',
+    '      border-radius: 8px;',
+    '      font-size: 0.95rem;',
+    '      resize: vertical;',
+    '      min-height: 120px;',
+    '      font-family: monospace;',
+    '      line-height: 1.4;',
+    '    }',
 
-'    #cookieInput:focus {',
-'      outline: none;',
-'      border-color: #3498db;',
-'    }',
+    '    #cookieInput:focus {',
+    '      outline: none;',
+    '      border-color: #3498db;',
+    '    }',
 
-'    .cookie-info {',
-'      background: #f8f9fa;',
-'      padding: 12px;',
-'      border-radius: 8px;',
-'      margin-bottom: 15px;',
-'    }',
+    '    .cookie-info {',
+    '      background: #f8f9fa;',
+    '      padding: 12px;',
+    '      border-radius: 8px;',
+    '      margin-bottom: 15px;',
+    '    }',
 
-'    .cookie-info p {',
-'      margin: 0;',
-'      color: #2c3e50;',
-'      font-size: 0.9rem;',
-'    }',
+    '    .cookie-info p {',
+    '      margin: 0;',
+    '      color: #2c3e50;',
+    '      font-size: 0.9rem;',
+    '      margin-bottom: 8px;', // 添加底部间距
+    '    }',
 
-'    #currentTokenDisplay {',
-'      color: #3498db;',
-'      font-family: monospace;',
-'      word-break: break-all;',
-'    }',
+    '    .cookie-info p:last-child {',
+    '      margin-bottom: 0;', // 最后一个p元素不需要底部间距
+    '    }',
 
-// 添加获取cookie按钮样式
-'    .get-cookie-link {',
-'      position: fixed;', 
-'      left: 150px;', // 放在github图标左边
-'      top: 22px;',
-'      background: #2ecc71;', // 使用不同的颜色区分
-'      color: white;',
-'      border: none;',
-'      padding: 8px 15px;',
-'      border-radius: 5px;',
-'      cursor: pointer;',
-'      z-index: 1001;',
-'      text-decoration: none;',
-'      font-size: 14px;',
-'      transition: background 0.3s ease;',
-'    }',
+    '    .token-expiry {',
+    '      color: #7f8c8d;',
+    '      font-size: 0.85rem;',
+    '    }',
 
-'    .get-cookie-link:hover {',
-'      background: #27ae60;',
-'    }',
+    '    .token-expiry.expired {',
+    '      color: #e74c3c;',
+    '    }',
 
-'    .advanced-mode-toggle {',
-'      display: flex;',
-'      align-items: center;',
-'      margin-bottom: 15px;',
-'      padding: 10px;',
-'      background: #f8f9fa;',
-'      border-radius: 8px;',
-'    }',
+    '    #currentTokenDisplay {',
+    '      color: #3498db;',
+    '      font-family: monospace;',
+    '      word-break: break-all;',
+    '    }',
 
-'    .advanced-mode-toggle input[type="checkbox"] {',
-'      margin-right: 10px;',
-'    }',
+    // 添加获取cookie按钮样式
+    '    .get-cookie-link {',
+    '      position: fixed;',
+    '      left: 150px;', // 放在github图标左边
+    '      top: 22px;',
+    '      background: #2ecc71;', // 使用不同的颜色区分
+    '      color: white;',
+    '      border: none;',
+    '      padding: 8px 15px;',
+    '      border-radius: 5px;',
+    '      cursor: pointer;',
+    '      z-index: 1001;',
+    '      text-decoration: none;',
+    '      font-size: 14px;',
+    '      transition: background 0.3s ease;',
+    '    }',
 
-'    .prompt-container {',
-'      display: none;', // 默认隐藏
-'      margin-bottom: 15px;',
-'    }',
+    '    .get-cookie-link:hover {',
+    '      background: #27ae60;',
+    '    }',
 
-'    .prompt-container.show {',
-'      display: block;',
-'    }',
+    '    .advanced-mode-toggle {',
+    '      display: flex;',
+    '      align-items: center;',
+    '      margin-bottom: 15px;',
+    '      padding: 10px;',
+    '      background: #f8f9fa;',
+    '      border-radius: 8px;',
+    '    }',
 
-'    #promptInput {',
-'      width: 100%;',
-'      padding: 12px;',
-'      border: 2px solid #e9ecef;',
-'      border-radius: 8px;',
-'      font-size: 0.95rem;',
-'      resize: vertical;',
-'      min-height: 120px;',
-'      font-family: monospace;',
-'      line-height: 1.4;',
-'    }',
+    '    .advanced-mode-toggle input[type="checkbox"] {',
+    '      margin-right: 10px;',
+    '    }',
 
-'    #promptInput:focus {',
-'      outline: none;',
-'      border-color: #3498db;',
-'    }',
+    '    .prompt-container {',
+    '      display: none;', // 默认隐藏
+    '      margin-bottom: 15px;',
+    '    }',
+
+    '    .prompt-container.show {',
+    '      display: block;',
+    '    }',
+
+    '    #promptInput {',
+    '      width: 100%;',
+    '      padding: 12px;',
+    '      border: 2px solid #e9ecef;',
+    '      border-radius: 8px;',
+    '      font-size: 0.95rem;',
+    '      resize: vertical;',
+    '      min-height: 120px;',
+    '      font-family: monospace;',
+    '      line-height: 1.4;',
+    '    }',
+
+    '    #promptInput:focus {',
+    '      outline: none;',
+    '      border-color: #3498db;',
+    '    }',
     '</style>',
     '</head>',
     '<body>',
@@ -1283,6 +1297,7 @@ function getHTML() {
     '</div>',
     '<div class="cookie-info">',
     '<p>当前Token: <span id="currentTokenDisplay">未设置</span></p>',
+    '<p>过期时间: <span id="tokenExpiryDisplay" class="token-expiry">未知</span></p>',
     '</div>',
     '<button class="save-btn" id="saveTokens">保存设置</button>',
     '</div>',
@@ -1495,7 +1510,7 @@ function getHTML() {
     '          historyManager.displayHistory(currentToken);',
     '        });',
     '        tokenList.appendChild(div);',
-    '      });',  
+    '      });',
     '      const tokenInput = document.getElementById(\'tokenInput\');',
     '      if (tokenInput) {',
     '        tokenInput.value = tokens.join(",");',
@@ -1528,6 +1543,9 @@ function getHTML() {
     '      // 更新显示',
     '      document.getElementById(\'currentTokenDisplay\').textContent = ',
     '        token.slice(0, 10) + "..." + token.slice(-10);',
+    '      ',
+    '      // 更新过期时间显示',
+    '      updateTokenExpiryDisplay(token);',
     '      ',
     '      alert(\'设置已保存\');',
     '    });',
@@ -1831,12 +1849,12 @@ function getHTML() {
     '        await navigator.clipboard.writeText(result);',
     '        btn.textContent = \'已复制\';',
     '        btn.classList.add(\'copied\');',
-        
+
     '        setTimeout(() => {',
     '          btn.textContent = \'复制结果\';',
     '          btn.classList.remove(\'copied\');',
     '        }, 2000);',
-        
+
     '        return true;',
     '      } catch (err) {',
     '        console.error(\'复制失败:\', err);',
@@ -1988,6 +2006,7 @@ function getHTML() {
     '          currentToken = token;',
     '          document.getElementById(\'currentTokenDisplay\').textContent = ',
     '            token.slice(0, 10) + "..." + token.slice(-10);',
+    '          updateTokenExpiryDisplay(token);', // 修改这行，确保正确的字符串格式
     '        }',
     '      }',
     '    }',
@@ -2020,6 +2039,57 @@ function getHTML() {
     '    }',
 
     '    loadAdvancedSettings();',
+
+    '    // JWT解析函数',
+    '    function parseJwt(token) {',
+    '      try {',
+    '        const base64Url = token.split(\'.\')[1];',
+    '        const base64 = base64Url.replace(/-/g, \'+\').replace(/_/g, \'/\');',
+    '        const jsonPayload = decodeURIComponent(atob(base64).split(\'\').map(function(c) {',
+    '          return \'%\' + (\'00\' + c.charCodeAt(0).toString(16)).slice(-2);',
+    '        }).join(\'\'));',
+    '        return JSON.parse(jsonPayload);',
+    '      } catch (e) {',
+    '        console.error(\'JWT解析错误:\', e);',
+    '        return null;',
+    '      }',
+    '    }',
+
+    '    // 更新Token过期时间显示',
+    '    function updateTokenExpiryDisplay(token) {',
+    '      const expiryDisplay = document.getElementById(\'tokenExpiryDisplay\');',
+    '      if (!token) {',
+    '        expiryDisplay.textContent = \'未设置\';',
+    '        expiryDisplay.classList.remove(\'expired\');',
+    '        return;',
+    '      }',
+    '      ',
+    '      const decoded = parseJwt(token);',
+    '      if (!decoded || !decoded.exp) {',
+    '        expiryDisplay.textContent = \'无法解析过期时间\';',
+    '        return;',
+    '      }',
+    '      ',
+    '      const expiryDate = new Date(decoded.exp * 1000);',
+    '      const now = new Date();',
+    '      const isExpired = expiryDate < now;',
+    '      ',
+    '      expiryDisplay.textContent = expiryDate.toLocaleString(\'zh-CN\', {',
+    '        year: \'numeric\',',
+    '        month: \'2-digit\',',
+    '        day: \'2-digit\',',
+    '        hour: \'2-digit\',',
+    '        minute: \'2-digit\',',
+    '        second: \'2-digit\'',
+    '      });',
+    '      ',
+    '      if (isExpired) {',
+    '        expiryDisplay.classList.add(\'expired\');',
+    '        expiryDisplay.textContent += \' (已过期)\';',
+    '      } else {',
+    '        expiryDisplay.classList.remove(\'expired\');',
+    '      }',
+    '    }',
     '</script>',
     '</body>',
     '</html>'
