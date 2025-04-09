@@ -675,20 +675,33 @@ function getHTML() {
     '    }',
 
     '    .history-item {',
-    '      display: flex;',
-    '      align-items: flex-start;',
-    '      padding: 1rem;',
-    '      background: #f8f9fa;',
-    '      border-radius: 8px;',
-    '      margin-bottom: 1rem;',
+    '      background: #ffffff;',
+    '      border-radius: 12px;',
+    '      margin-bottom: 20px;',
+    '      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);',
+    '      overflow: hidden;',
+    '      transition: transform 0.2s ease, box-shadow 0.2s ease;',
+    '      display: flex;', // Changed from horizontal to vertical layout
+    '      flex-direction: column;', // Added for vertical layout
+    '    }',
+
+    '    .history-item:hover {',
+    '      transform: translateY(-2px);',
+    '      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);',
+    '    }',
+
+    '    .history-image-container {',
+    '      position: relative;',
+    '      width: 100%;', // Changed to take full width
+    '      height: 200px;',
+    '      overflow: hidden;',
     '    }',
 
     '    .history-image {',
-    '      width: 100px;',
-    '      height: 100px;',
+    '      width: 100%;',
+    '      height: 100%;',
     '      object-fit: cover;',
-    '      border-radius: 4px;',
-    '      margin-right: 1rem;',
+    '      transition: transform 0.3s ease;',
     '    }',
 
     '    .history-content {',
@@ -946,6 +959,8 @@ function getHTML() {
     '      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);',
     '      overflow: hidden;',
     '      transition: transform 0.2s ease, box-shadow 0.2s ease;',
+    '      display: flex;', // Changed from horizontal to vertical layout
+    '      flex-direction: column;', // Added for vertical layout
     '    }',
 
     '    .history-item:hover {',
@@ -955,7 +970,7 @@ function getHTML() {
 
     '    .history-image-container {',
     '      position: relative;',
-    '      width: 100%;',
+    '      width: 100%;', // Changed to take full width
     '      height: 200px;',
     '      overflow: hidden;',
     '    }',
@@ -965,44 +980,6 @@ function getHTML() {
     '      height: 100%;',
     '      object-fit: cover;',
     '      transition: transform 0.3s ease;',
-    '    }',
-
-    '    .image-overlay {',
-    '      position: absolute;',
-    '      top: 0;',
-    '      left: 0;',
-    '      width: 100%;',
-    '      height: 100%;',
-    '      background: rgba(0, 0, 0, 0.4);',
-    '      display: flex;',
-    '      justify-content: center;',
-    '      align-items: center;',
-    '      opacity: 0;',
-    '      transition: opacity 0.3s ease;',
-    '    }',
-
-    '    .history-image-container:hover .image-overlay {',
-    '      opacity: 1;',
-    '    }',
-
-    '    .history-image-container:hover .history-image {',
-    '      transform: scale(1.05);',
-    '    }',
-
-    '    .overlay-btn {',
-    '      background: rgba(255, 255, 255, 0.9);',
-    '      color: #2c3e50;',
-    '      border: none;',
-    '      padding: 8px 16px;',
-    '      border-radius: 20px;',
-    '      cursor: pointer;',
-    '      font-size: 0.9rem;',
-    '      transition: all 0.2s ease;',
-    '    }',
-
-    '    .overlay-btn:hover {',
-    '      background: #ffffff;',
-    '      transform: scale(1.05);',
     '    }',
 
     '    .history-content {',
